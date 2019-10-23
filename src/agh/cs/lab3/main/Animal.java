@@ -29,7 +29,7 @@ public class Animal {
 
     public String toString(){
 
-        return this.direction.toString() + this.position.toString();
+        return this.direction.toString();
     }
     public void move (MoveDirection direction){
         switch(direction){
@@ -44,7 +44,7 @@ public class Animal {
                 Vector2d delta = this.direction.toUnitVector();
                 if (direction == BACKWARD) delta=delta.opposite();
                 Vector2d sum = this.position.add(delta);
-                if (sum.precedes(new Vector2d(4,4)) && sum.follows(new Vector2d(0,0)))
+                if (map.canMoveTo(sum))
                     this.position = sum;
                 break;
         }
