@@ -1,6 +1,10 @@
 package agh.cs.lab2.main;
 
 import agh.cs.lab2.Vector2d;
+
+import static agh.cs.lab2.MoveDirection.*;
+import static agh.cs.lab2.MoveDirection.LEFT;
+
 public enum MapDirection {
     NORTH, SOUTH, WEST, EAST;
     public String toString(){
@@ -39,4 +43,5 @@ public enum MapDirection {
             default: return null;
         }
     }
+
 }

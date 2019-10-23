@@ -10,28 +10,12 @@ public class OptionsParsers {
     public static MoveDirection[] parse(String [] args){
         MoveDirection [] directions = new MoveDirection [args.length];
         int counter=0;
+        MoveDirection tmp;
         for (String direction : args){
-            switch (direction){
-                case "f":
-                case "forward":
-                    directions[counter]=FORWARD;
-                    counter++;
-                    break;
-                case "b":
-                case "backward":
-                    directions[counter]=BACKWARD;
-                    counter++;
-                    break;
-                case "r":
-                case "right":
-                    directions[counter]=RIGHT;
-                    counter++;
-                    break;
-                case "l":
-                case "left":
-                    directions[counter]=LEFT;
-                    counter++;
-                    break;
+            tmp=MoveDirection.fromString(direction);
+            if (tmp!=null){
+                directions[counter]=tmp;
+                counter++;
             }
         }
         return Arrays.copyOfRange(directions,0,counter);

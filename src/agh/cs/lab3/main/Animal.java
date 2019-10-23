@@ -3,6 +3,7 @@ package agh.cs.lab3.main;
 import agh.cs.lab2.MoveDirection;
 import agh.cs.lab2.Vector2d;
 import agh.cs.lab2.main.MapDirection;
+import agh.cs.lab4.IWorldMap;
 
 import static agh.cs.lab2.MoveDirection.BACKWARD;
 import static agh.cs.lab2.main.MapDirection.NORTH;
@@ -10,6 +11,21 @@ import static agh.cs.lab2.main.MapDirection.NORTH;
 public class Animal {
     private MapDirection direction = NORTH;
     private Vector2d position = new Vector2d(2,2);
+    private IWorldMap map;
+
+    public Animal (IWorldMap map){
+        this(map, new Vector2d(2,2));
+    }
+
+    public Animal (IWorldMap map, Vector2d initialPosition){
+        this.map=map;
+        this.position=initialPosition;
+        this.direction=NORTH;
+    }
+
+    public Vector2d getPosition(){
+        return this.position;
+    }
 
     public String toString(){
 
