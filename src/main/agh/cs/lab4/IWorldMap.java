@@ -2,7 +2,7 @@ package agh.cs.lab4;
 
 import agh.cs.lab2.MoveDirection;
 import agh.cs.lab2.Vector2d;
-import agh.cs.lab3.main.Animal;
+import agh.cs.lab3.Animal;
 
 /**
  * The interface responsible for interacting with the map of the world.
