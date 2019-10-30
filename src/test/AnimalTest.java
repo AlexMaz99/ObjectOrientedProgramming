@@ -33,11 +33,11 @@ public class AnimalTest {
         assertEquals(dog.toString(), "N" );
         assertEquals(dog.getPosition(), new Vector2d(2,0));
     }
-    @Test
+    /*@Test
     void tooString(){
         Animal dog = new Animal();
         assertEquals(dog.toString(), "N");
         dog.move(RIGHT);
         assertEquals(dog.toString(), "E");
-    }
+    }*/
 }

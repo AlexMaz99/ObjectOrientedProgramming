@@ -13,13 +13,7 @@ public class Animal {
     private Vector2d position;
     private IWorldMap map;
 
-    public Animal (){
-        this.direction = NORTH;
-        this.position = new Vector2d(2,2);
-    }
-
     public Animal (IWorldMap map){
-
         this(map, new Vector2d(2,2));
     }
 

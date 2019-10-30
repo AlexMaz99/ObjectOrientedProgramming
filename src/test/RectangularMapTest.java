@@ -35,6 +35,8 @@ public class RectangularMapTest {
         assertTrue (map.place(new Animal (map, new Vector2d(6,4))));
         assertFalse (map.place(new Animal (map, new Vector2d(2,2))));
         assertFalse (map.place(new Animal (map, new Vector2d(3,4))));
+        assertFalse (map.place(new Animal(map, new Vector2d(-10,-10))));
+        assertFalse (map.place(new Animal(map, new Vector2d(100,100))));
     }
 
     @Test
