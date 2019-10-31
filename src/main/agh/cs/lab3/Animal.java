@@ -4,11 +4,12 @@ import agh.cs.lab2.MoveDirection;
 import agh.cs.lab2.Vector2d;
 import agh.cs.lab2.MapDirection;
 import agh.cs.lab4.IWorldMap;
+import agh.cs.lab5.IMapElement;
 
 import static agh.cs.lab2.MoveDirection.BACKWARD;
 import static agh.cs.lab2.MapDirection.NORTH;
 
-public class Animal {
+public class Animal implements IMapElement {
     private MapDirection direction;
     private Vector2d position;
     private IWorldMap map;
@@ -43,9 +44,9 @@ public class Animal {
             case BACKWARD:
                 Vector2d delta = this.direction.toUnitVector();
                 if (direction == BACKWARD) delta=delta.opposite();
-                Vector2d sum = this.position.add(delta);
-                if (map.canMoveTo(sum))
-                    this.position = sum;
+                Vector2d newPosition = this.position.add(delta);
+                if (map.canMoveTo(newPosition))
+                    this.position = newPosition;
                 break;
         }
     }

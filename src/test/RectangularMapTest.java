@@ -49,10 +49,10 @@ public class RectangularMapTest {
         assertNull(map.objectAt(new Vector2d(7,3)));
         assertNull(map.objectAt(new Vector2d(0,0)));
 
-        assertEquals(map.animals.get(0).getPosition(), new Vector2d(2, 0));
-        assertEquals(map.animals.get(1).getPosition(), new Vector2d(3, 5));
-        assertEquals(map.animals.get(0).toString(), "S");
-        assertEquals(map.animals.get(1).toString(), "N");
+        assertEquals(map.elements.get(0).getPosition(), new Vector2d(2, 0));
+        assertEquals(map.elements.get(1).getPosition(), new Vector2d(3, 5));
+        assertEquals(map.elements.get(0).toString(), "v");
+        assertEquals(map.elements.get(1).toString(), "^");
     }
     @Test
     void isOccupied(){
@@ -71,7 +71,7 @@ public class RectangularMapTest {
             for (int j = 0; j <=width; j++) {
                 if ((i == 2 && j == 2) || (i == 3 && j == 4))
                     assertNotNull(map.objectAt(new Vector2d(i,j)));
-                else assertNull(map.objectAt(new Vector2d(0,0)));
+                else assertNull(map.objectAt(new Vector2d(i,j)));
             }
         }
     }
