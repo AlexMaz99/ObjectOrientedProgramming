@@ -2,7 +2,6 @@ import agh.cs.lab2.Vector2d;
 import agh.cs.lab3.Animal;
 import agh.cs.lab4.RectangularMap;
 import org.junit.jupiter.api.Test;
-
 import static agh.cs.lab2.MoveDirection.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -11,7 +10,7 @@ public class AnimalTest {
     void move(){
         RectangularMap map = new RectangularMap (4,4);
         map.place(new Animal (map));
-        Animal dog=(Animal)map.elements.get(0);
+        Animal dog=(Animal)map.animals.get(0);
         dog.move(RIGHT);
         assertEquals( dog.toString(), ">" );
         assertEquals(dog.getPosition(), new Vector2d(2,2));
@@ -33,11 +32,4 @@ public class AnimalTest {
         assertEquals(dog.toString(), "^" );
         assertEquals(dog.getPosition(), new Vector2d(2,0));
     }
-    /*@Test
-    void tooString(){
-        Animal dog = new Animal();
-        assertEquals(dog.toString(), "^");
-        dog.move(RIGHT);
-        assertEquals(dog.toString(), ">");
-    }*/
 }

@@ -17,7 +17,8 @@ public enum MoveDirection {
             case "l":
             case "left":
                  return LEFT;
-            default: return null;
+            default:
+                throw new IllegalArgumentException(direction + " is not legal move specification");
         }
     }
 }

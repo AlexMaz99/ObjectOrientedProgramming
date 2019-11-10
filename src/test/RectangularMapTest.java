@@ -33,10 +33,12 @@ public class RectangularMapTest {
     void place(){
         assertTrue (map.place(new Animal (map, new Vector2d(1,1))));
         assertTrue (map.place(new Animal (map, new Vector2d(6,4))));
-        assertFalse (map.place(new Animal (map, new Vector2d(2,2))));
-        assertFalse (map.place(new Animal (map, new Vector2d(3,4))));
-        assertFalse (map.place(new Animal(map, new Vector2d(-10,-10))));
-        assertFalse (map.place(new Animal(map, new Vector2d(100,100))));
+        assertThrows(IllegalArgumentException.class, () -> {
+            map.place(new Animal(map, new Vector2d(2, 2)));
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            map.place(new Animal(map, new Vector2d(3, 4)));
+        });
     }
 
     @Test
@@ -49,10 +51,10 @@ public class RectangularMapTest {
         assertNull(map.objectAt(new Vector2d(7,3)));
         assertNull(map.objectAt(new Vector2d(0,0)));
 
-        assertEquals(map.elements.get(0).getPosition(), new Vector2d(2, 0));
-        assertEquals(map.elements.get(1).getPosition(), new Vector2d(3, 5));
-        assertEquals(map.elements.get(0).toString(), "v");
-        assertEquals(map.elements.get(1).toString(), "^");
+        assertEquals(map.animals.get(0).getPosition(), new Vector2d(2, 0));
+        assertEquals(map.animals.get(1).getPosition(), new Vector2d(3, 5));
+        assertEquals(map.animals.get(0).toString(), "v");
+        assertEquals(map.animals.get(1).toString(), "^");
     }
     @Test
     void isOccupied(){
