@@ -2,41 +2,52 @@ package agh.cs.lab5;
 
 import agh.cs.lab2.Vector2d;
 import agh.cs.lab3.Animal;
+import agh.cs.lab4.MapVisualizer;
+import agh.cs.lab7.MapBoundary;
+
 import java.util.Random;
 
 public class GrassField extends AbstractWorldMap {
-    final public int howMuchGrass;
-    public Random rand = new Random();
+    final private int howMuchGrass;
+    private MapBoundary mapBoundary = new MapBoundary();
+    private Random rand = new Random();
 
     public GrassField(int howMuchGrass){
-
-        lowerLeft = new Vector2d (0,0);
-        upperRight = new Vector2d (0,0);
         this.howMuchGrass = howMuchGrass;
-
         Vector2d grassPosition;
+
         for(int i=0; i<howMuchGrass; i++){
-            grassPosition = generateGrass(this);
-            this.elementsMap.put (grassPosition, new Grass(grassPosition));
-            updateCorner(grassPosition);
+            grassPosition = createGrass(this);
+            Grass grass = new Grass (grassPosition);
+            this.elementsMap.put (grassPosition, grass);
+            mapBoundary.addObject(grass);
         }
     }
 
     @Override
     public boolean place(Animal animal){
-        if (objectAt(animal.getPosition()) instanceof Grass){
-            Vector2d newPosition = generateGrass(this);
-            this.elementsMap.put(newPosition, new Grass (newPosition));
-            this.elementsMap.remove(animal.getPosition());
-        }
+        this.relocateGrass(animal.getPosition());
         if(super.place(animal)){
-            updateCorner(animal.getPosition());
+            mapBoundary.addObject(animal);
+            animal.addObserver(mapBoundary);
             return true;
         }
         return false;
     }
 
-    public static Vector2d generateGrass(GrassField map){
+    public void relocateGrass(Vector2d position){
+        IMapElement element = this.objectAt (position);
+        if (element instanceof Grass){
+            Vector2d newPosition = GrassField.createGrass(this);
+            Grass grass = new Grass (newPosition);
+            this.elementsMap.put(newPosition, grass);
+            mapBoundary.deleteObject(element.getPosition());
+            mapBoundary.addObject(grass);
+            this.elementsMap.remove(position);
+        }
+    }
+
+    public static Vector2d createGrass(GrassField map){
         Vector2d grassPosition;
         int x,y;
         do{
@@ -45,5 +56,14 @@ public class GrassField extends AbstractWorldMap {
             grassPosition = new Vector2d (x,y);
         } while (map.isOccupied(grassPosition));
         return grassPosition;
+    }
+
+    @Override
+    public String toString(){
+        MapVisualizer mapVisualizer = new MapVisualizer(this);
+
+        Vector2d lowerLeft = new Vector2d(mapBoundary.getLeftBoundary(), mapBoundary.getLowerBoundary());
+        Vector2d upperRight = new Vector2d(mapBoundary.getRightBoundary(), mapBoundary.getUpperBoundary());
+        return mapVisualizer.draw(lowerLeft, upperRight);
     }
 }

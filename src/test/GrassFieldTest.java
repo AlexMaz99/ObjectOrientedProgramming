@@ -7,11 +7,16 @@ import agh.cs.lab5.Grass;
 import agh.cs.lab5.GrassField;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GrassFieldTest {
-    public AbstractWorldMap map;
+    private AbstractWorldMap map;
+    private List<Animal> animals = new ArrayList<>();
 
 
     @BeforeEach
@@ -69,10 +74,11 @@ public class GrassFieldTest {
         assertNotNull(map.objectAt(new Vector2d(3, 7)));
         assertNull(map.objectAt(new Vector2d(100,100)));
 
-        assertEquals(map.animals.get(0).getPosition(), new Vector2d(2, -1));
-        assertEquals(map.animals.get(1).getPosition(), new Vector2d(3, 7));
-        assertEquals(map.animals.get(0).toString(), "v");
-        assertEquals(map.animals.get(1).toString(), "^");
+        animals = map.getAnimals();
+        assertEquals(animals.get(0).getPosition(), new Vector2d(2, -1));
+        assertEquals(animals.get(1).getPosition(), new Vector2d(3, 7));
+        assertEquals(animals.get(0).toString(), "v");
+        assertEquals(animals.get(1).toString(), "^");
     }
 
     @Test
@@ -109,25 +115,5 @@ public class GrassFieldTest {
         if (map.isOccupied(new Vector2d(5,4)))
             assertTrue (map.objectAt(new Vector2d(5,4)) instanceof Grass);
         else assertFalse (map.objectAt(new Vector2d(5,4)) instanceof Grass);
-    }
-
-    @Test
-    void updateCorner(){
-        MoveDirection[] directions = new OptionsParsers().parse(new String[]{"f", "b", "r", "l", "f", "f", "r", "r", "f", "f", "f", "f", "f", "f", "f", "f"});
-        map.run(directions);
-        assertEquals(map.lowerLeft.toString(), "(0,-1)");
-
-        map.place(new Animal(map, new Vector2d(-10, -10)));
-        map.place(new Animal(map, new Vector2d(20, 20)));
-        assertEquals(map.lowerLeft.toString(), "(-10,-10)");
-        assertEquals(map.upperRight.toString(), "(20,20)");
-
-        map.updateCorner(new Vector2d(100,100));
-        assertEquals(map.lowerLeft.toString(), "(-10,-10)");
-        assertEquals(map.upperRight.toString(), "(100,100)");
-
-        map.updateCorner(new Vector2d(-100,-100));
-        assertEquals(map.lowerLeft.toString(), "(-100,-100)");
-        assertEquals(map.upperRight.toString(), "(100,100)");
     }
 }

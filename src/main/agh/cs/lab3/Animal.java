@@ -4,10 +4,13 @@ import agh.cs.lab2.MoveDirection;
 import agh.cs.lab2.Vector2d;
 import agh.cs.lab2.MapDirection;
 import agh.cs.lab5.AbstractWorldMap;
-import agh.cs.lab5.Grass;
 import agh.cs.lab5.GrassField;
 import agh.cs.lab5.IMapElement;
+import agh.cs.lab7.IPositionChangeObserver;
 
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static agh.cs.lab2.MoveDirection.BACKWARD;
 import static agh.cs.lab2.MapDirection.NORTH;
@@ -16,6 +19,8 @@ public class Animal implements IMapElement {
     private MapDirection direction;
     private Vector2d position;
     private AbstractWorldMap map;
+
+    private List <IPositionChangeObserver> observers = new ArrayList<>();
 
     public Animal (AbstractWorldMap map){
         this(map, new Vector2d(2,2));
@@ -48,29 +53,28 @@ public class Animal implements IMapElement {
                 Vector2d delta = this.direction.toUnitVector();
                 if (direction == BACKWARD) delta=delta.opposite();
                 Vector2d destination = this.position.add(delta);
-                this.moveTo (destination);
+
+                if (this.map.canMoveTo(destination)){ // grass or empty
+                    if (map instanceof GrassField)
+                        ((GrassField) map).relocateGrass(destination);
+                    this.positionChanged(this.getPosition(), destination);
+                    this.position = destination;
+                }
                 break;
         }
     }
 
-    public void moveTo (Vector2d destination){
-        if (map.canMoveTo(destination)){ // there is grass or is empty
-            boolean createGrass = false;
-            if (map.isOccupied(destination)){ //there is grass
-                createGrass = true;
-                map.elementsMap.remove(destination);
-            }
+    public void addObserver (IPositionChangeObserver observer){
+        this.observers.add(observer);
+    }
 
-            map.elementsMap.remove(this.position);
-            this.position = destination;
-            map.elementsMap.put(this.position, this);
-            map.updateCorner (destination);
+    public void removeObserver (IPositionChangeObserver observer){
+        this.observers.remove(observer);
+    }
 
-            if (this.map instanceof GrassField && createGrass){
-                Vector2d newPosition = GrassField.generateGrass((GrassField)this.map);
-                map.elementsMap.put(newPosition, new Grass(newPosition));
-                map.updateCorner(newPosition);
-            }
+    public void positionChanged (Vector2d oldPosition, Vector2d newPosition){
+        for (IPositionChangeObserver observer : this.observers){
+            observer.positionChanged(oldPosition, newPosition);
         }
     }
 }

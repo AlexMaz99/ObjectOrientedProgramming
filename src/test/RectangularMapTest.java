@@ -6,10 +6,14 @@ import agh.cs.lab4.RectangularMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RectangularMapTest {
-    public RectangularMap map;
+    private RectangularMap map;
+    private List<Animal> animals = new ArrayList<>();
     private int width = 10;
     private int height = 5;
 
@@ -51,10 +55,12 @@ public class RectangularMapTest {
         assertNull(map.objectAt(new Vector2d(7,3)));
         assertNull(map.objectAt(new Vector2d(0,0)));
 
-        assertEquals(map.animals.get(0).getPosition(), new Vector2d(2, 0));
-        assertEquals(map.animals.get(1).getPosition(), new Vector2d(3, 5));
-        assertEquals(map.animals.get(0).toString(), "v");
-        assertEquals(map.animals.get(1).toString(), "^");
+        animals = map.getAnimals();
+
+        assertEquals(animals.get(0).getPosition(), new Vector2d(2, 0));
+        assertEquals(animals.get(1).getPosition(), new Vector2d(3, 5));
+        assertEquals(animals.get(0).toString(), "v");
+        assertEquals(animals.get(1).toString(), "^");
     }
     @Test
     void isOccupied(){
