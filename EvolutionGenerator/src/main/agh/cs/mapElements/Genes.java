@@ -12,6 +12,7 @@ public class Genes {
     public Genes(){
         generateGens();
     }
+
     public Genes(Genes parent1, Genes parent2){
         generateGens(parent1, parent2);
     }
@@ -43,15 +44,26 @@ public class Genes {
         Arrays.sort(this.genes);
 
         //check if genes contains all types of genes
-        int [] typesOfGenes = new int[8];
+        int [] typesOfGenes = new int[NUMBEROFTYPE];
         for (int i=0; i<32; i++) {
-            typesOfGenes[this.genes[i]] += 1;
+            typesOfGenes[this.genes[i]] ++;
         }
         for (int i=0; i<NUMBEROFTYPE; i++){
-            if (typesOfGenes[i] <= 0)
-                this.genes[i] = i;
+            if (typesOfGenes[i] <= 0){
+                int x;
+                do{
+                    x = random.nextInt(NUMBEROFTYPE);
+                } while (typesOfGenes[x]<2);
+                typesOfGenes[x]--;
+                typesOfGenes[i]++;
+            }
         }
-        Arrays.sort(this.genes);
+        int counter = 0;
+        for (int i=0; i<NUMBEROFTYPE; i++){
+            while (typesOfGenes[i]--!=0){
+                this.genes[counter++] = i;
+            }
+        }
     }
 
     @Override

@@ -1,6 +1,9 @@
 package agh.cs.map;
 
+import agh.cs.mapElements.IMapElement;
 import agh.cs.position.Vector2d;
+
+import java.util.List;
 
 public class MapVisualizer {
     private static final String EMPTY_CELL = " ";
@@ -68,8 +71,10 @@ public class MapVisualizer {
     private String drawObject(Vector2d currentPosition) {
         String result = null;
         if (this.map.isOccupied(currentPosition)) {
-            Object object = this.map.objectAt(currentPosition);
-            if (object != null) {
+            List<IMapElement> objects = this.map.objectsAt(currentPosition);
+            Object object = this.map.objectsAt(currentPosition).get(0);
+            if (objects.size()>1) result = ""+ objects.size();
+            else if (object != null) {
                 result = object.toString();
             } else {
                 result = EMPTY_CELL;

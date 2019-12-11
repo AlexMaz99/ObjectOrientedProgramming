@@ -4,16 +4,15 @@ import agh.cs.map.IWorldMap;
 import agh.cs.map.WorldMap;
 
 public class World {
-    public static void main (String [] args){
+    public static void main (String [] args) {
 
-        IWorldMap map = new WorldMap(20,20,0.4,3, 1, 10);
-        ((WorldMap) map).placeFirstAnimals(3);
+        IWorldMap map = new WorldMap(10, 10, 0.4, 3, 1, 20);
+        ((WorldMap) map).placeFirstAnimals(10);
         System.out.println(map);
-        for (int i=0; i<10; i++){
-            ((WorldMap)map).anotherDay();
+        for (int i = 0; i < 11; i++) {
+            ((WorldMap) map).anotherDay();
+
 
         }
-
     }
-
 }

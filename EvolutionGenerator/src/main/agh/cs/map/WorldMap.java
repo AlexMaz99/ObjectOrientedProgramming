@@ -4,16 +4,15 @@ import agh.cs.mapElements.Grass;
 import agh.cs.position.Vector2d;
 import agh.cs.mapElements.Animal;
 import agh.cs.mapElements.IMapElement;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 
 import java.util.*;
 
-public class WorldMap implements IWorldMap, IPositionChangeObserver {
+public class WorldMap implements IWorldMap, IPositionChangeObserver { //TODO: improve methods
 
     protected List<Animal> animals = new ArrayList<>();
-    protected Map<Vector2d, IMapElement> elementsMap = new HashMap<>();
-    protected Multimap<Vector2d, Animal> animalsMap = LinkedListMultimap.create();
+    protected ListMultimap<Vector2d, IMapElement> elementsMap = ArrayListMultimap.create();
 
     private MapVisualizer mapVisualizer = new MapVisualizer(this);
     private final Vector2d lowerLeft;
@@ -49,25 +48,71 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
         removeDeadAnimals();
         for (Animal animal : animals){
             animal.move();
-            System.out.println(animal.getEnergy());
-            System.out.println(animal.getPosition());
         }
-        // eat grass
-
+        eatGrass();
+        procreate();
         generateGrass();
+        System.out.println("Number of animals: " + animals.size());
         System.out.println(this);
     }
     private void removeDeadAnimals(){
-        for (Animal animal : animals)
-            if (animal.isDead())
-                this.removeAnimal(animal);
+        List <Animal> deadAnimals =  new ArrayList<>();
+        for (Animal animal : this.animals){
+            if (animal.isDead()){
+                deadAnimals.add(animal);
+            }
+        }
+        for (Animal deadAnimal : deadAnimals){
+            this.removeAnimal(deadAnimal);
+        }
     }
     private void removeAnimal (Animal animal){
+        List <IMapElement> elements =  this.elementsMap.get(animal.getPosition());
         this.animals.remove(animal);
-        this.elementsMap.remove(animal);
+        elements.remove(animal);
     }
     public void removeGrass(Grass grass){
-        elementsMap.remove(grass.getPosition());
+        List <IMapElement> elements =  this.elementsMap.get(grass.getPosition());
+        elements.remove(grass);
+    }
+    private void eatGrass (){
+        for (Animal animal: this.animals){
+            List <IMapElement> elements = this.objectsAt(animal.getPosition());
+            if(elements.get(0) instanceof Grass){
+                if(animal.eatGrass((Grass)elements.get(0))){
+                    removeGrass((Grass)elements.get(0));
+                }
+            }
+        }
+    }
+    private void procreate (){
+        List <Vector2d> positions = new ArrayList<>();
+        for (Animal animal: this.animals){
+            if (!positions.contains(animal.getPosition())){
+                positions.add(animal.getPosition());
+            }
+        }
+        for (Vector2d position: positions){
+            List <IMapElement> elements = this.objectsAt(position);
+            List <Animal> animalsToProcreate = new ArrayList<>();
+            for (IMapElement element : elements)
+                if (element instanceof Animal)
+                    animalsToProcreate.add((Animal)element);
+            if (animalsToProcreate.size()>1){
+                Animal strongestAnimal=animalsToProcreate.get(0);
+                for (Animal animal: animalsToProcreate){
+                    if (animal.getEnergy() > strongestAnimal.getEnergy())
+                        strongestAnimal = animal;
+                }
+                animalsToProcreate.remove(strongestAnimal);
+                Animal secondStrongestAnimal = animalsToProcreate.get(0);
+                for (Animal animal: animalsToProcreate){
+                    if (animal.getEnergy() > secondStrongestAnimal.getEnergy())
+                        secondStrongestAnimal = animal;
+                }
+                strongestAnimal.reproduce(secondStrongestAnimal);
+            }
+        }
     }
 
     public Vector2d correctPosition(Vector2d position){
@@ -80,11 +125,6 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
         else if (position.y < 0) y = upperRight.y;
         else y = position.y;
         return new Vector2d (x,y);
-    }
-
-    @Override
-    public boolean canMoveTo(Vector2d position) {
-        return true;
     }
 
     @Override
@@ -117,19 +157,31 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
 
     @Override
     public boolean isOccupied(Vector2d position) {
-        return this.elementsMap.containsKey(position);
+        /*return this.elementsMap.containsKey(position);*/
+        return objectsAt(position).size()!=0;
     }
 
     @Override
-    public IMapElement objectAt(Vector2d position) {
+    public List <IMapElement> objectsAt(Vector2d position) {
         return elementsMap.get(position);
     }
 
     @Override
     public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
-        Animal animal = (Animal) this.elementsMap.get(oldPosition);
-        this.elementsMap.remove(oldPosition);
-        this.elementsMap.put(newPosition, animal);
+        List <IMapElement> animals =  this.elementsMap.get(oldPosition);
+        Animal animalToDelete = null;
+        boolean delete = false;
+        for (IMapElement animal : animals){
+            if (animal.getPosition().equals(newPosition)){
+                animalToDelete = (Animal) animal;
+                delete = true;
+                break;
+            }
+        }
+        if (delete) {
+            animals.remove(animalToDelete);
+            elementsMap.put(newPosition, animalToDelete);
+        }
     }
     @Override
     public String toString(){
@@ -157,5 +209,8 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
     }
     public int getMoveEnergy(){
         return this.moveEnergy;
+    }
+    public List<Animal> getAnimals(){
+        return this.animals;
     }
 }

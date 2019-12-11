@@ -8,7 +8,6 @@ public class Grass implements IMapElement {
     private final int protein;
 
     public Grass(Vector2d position, int plantEnergy){
-
         this.position = position;
         this.protein = plantEnergy;
     }

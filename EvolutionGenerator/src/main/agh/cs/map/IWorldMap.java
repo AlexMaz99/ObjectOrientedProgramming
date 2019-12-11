@@ -4,6 +4,8 @@ import agh.cs.position.Vector2d;
 import agh.cs.mapElements.Animal;
 import agh.cs.mapElements.IMapElement;
 
+import java.util.List;
+
 /**
  * The interface responsible for interacting with the map of the world.
  * Assumes that Vector2d and MoveDirection classes are defined.
@@ -12,14 +14,6 @@ import agh.cs.mapElements.IMapElement;
  *
  */
 public interface IWorldMap {
-    /**
-     * Indicate if any object can move to the given position.
-     *
-     * @param position
-     *            The position checked for the movement possibility.
-     * @return True if the object can move to that position.
-     */
-    boolean canMoveTo(Vector2d position);
 
     /**
      * Place a animal on the map.
@@ -58,7 +52,7 @@ public interface IWorldMap {
      *            The position of the object.
      * @return Object or null if the position is not occupied.
      */
-    IMapElement objectAt(Vector2d position);
+    List<IMapElement> objectsAt(Vector2d position);
     Vector2d correctPosition(Vector2d position);
     int getMoveEnergy();
 }

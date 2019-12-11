@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static java.lang.Math.max;
+
 public class Animal implements IMapElement {
 
     private MapDirection direction;
@@ -29,6 +31,7 @@ public class Animal implements IMapElement {
         this.minEnergyToReproduce = startEnergy/2;
         this.moveEnergy = this.map.getMoveEnergy();
     }
+
     private Animal (IWorldMap map, Animal parent1, Animal parent2){
         this.map = map;
         this.position = parent1.position;
@@ -48,19 +51,33 @@ public class Animal implements IMapElement {
         Vector2d newPosition = this.position.add (this.direction.toUnitVector());
         newPosition = this.map.correctPosition(newPosition);
 
-        this.reduceEnergy(1);
+        this.reduceEnergy(this.moveEnergy);
 
-        if (this.map.canMoveTo(newPosition)){
-
-            Vector2d oldPosition = this.getPosition();
-            this.position = newPosition;
-            this.positionChanged(oldPosition, newPosition);
-        }
-
+        Vector2d oldPosition = this.getPosition();
+        this.position = newPosition;
+        this.positionChanged(oldPosition, newPosition);
     }
 
-    private void eatGrass(Grass grass){
-        this.energy += grass.getProtein();
+    public boolean eatGrass(Grass grass){ // TODO: Correct
+        List <IMapElement> elements = this.map.objectsAt(grass.getPosition());
+        int maxEnergy = 0;
+        for (IMapElement element: elements){
+            if (element instanceof Animal){
+                maxEnergy = max (maxEnergy, ((Animal) element).getEnergy());
+            }
+        }
+        if(maxEnergy==0) return false;
+        List <Animal> animalWithSameEnergy = new ArrayList<>();
+        for (IMapElement animal: elements){
+            if (animal instanceof Animal && ((Animal) animal).energy==maxEnergy){
+                animalWithSameEnergy.add((Animal) animal);
+            }
+        }
+        int proteinToShare = grass.getProtein() / animalWithSameEnergy.size();
+        for (Animal animal : animalWithSameEnergy){
+            animal.energy += proteinToShare;
+        }
+        return true;
     }
 
     public boolean canReproduce(){
@@ -90,18 +107,26 @@ public class Animal implements IMapElement {
     public void addObserver (IPositionChangeObserver observer){
         this.observers.add(observer);
     }
+
     public void removeObserver (IPositionChangeObserver observer){
         this.observers.remove(observer);
     }
+
     private void positionChanged (Vector2d oldPosition, Vector2d newPosition){
         for (IPositionChangeObserver observer : this.observers){
             observer.positionChanged(oldPosition, newPosition);
         }
     }
+
     public Vector2d getPosition(){
         return position;
     }
+
     public int getEnergy(){
         return energy;
+    }
+
+    public MapDirection getDirection(){
+        return this.direction;
     }
 }
