@@ -42,7 +42,7 @@ public class Animal implements IMapElement {
         this.energy = (int) (0.25 * parent1.energy) + (int) (0.25 * parent2.energy);
         parent1.energy = (int) (0.75 * parent1.energy);
         parent2.energy = (int) (0.75 * parent2.energy);
-        this.minEnergyToReproduce = this.energy/2;
+        this.minEnergyToReproduce = parent1.minEnergyToReproduce;
     }
 
     public void move (){
@@ -58,23 +58,12 @@ public class Animal implements IMapElement {
         this.positionChanged(oldPosition, newPosition);
     }
 
-    public boolean eatGrass(Grass grass){ // TODO: Correct
-        List <IMapElement> elements = this.map.objectsAt(grass.getPosition());
-        int maxEnergy = 0;
-        for (IMapElement element: elements){
-            if (element instanceof Animal){
-                maxEnergy = max (maxEnergy, ((Animal) element).getEnergy());
-            }
-        }
-        if(maxEnergy==0) return false;
-        List <Animal> animalWithSameEnergy = new ArrayList<>();
-        for (IMapElement animal: elements){
-            if (animal instanceof Animal && ((Animal) animal).energy==maxEnergy){
-                animalWithSameEnergy.add((Animal) animal);
-            }
-        }
-        int proteinToShare = grass.getProtein() / animalWithSameEnergy.size();
-        for (Animal animal : animalWithSameEnergy){
+    public boolean eatGrass(Grass grass){
+        List <Animal> strongestAnimals = this.map.getStrongestAnimals(this.map.chooseAnimals(this.map.objectsAt(grass.getPosition())));
+        if(strongestAnimals.size() == 0) return false;
+
+        int proteinToShare = grass.getProtein() / strongestAnimals.size();
+        for (Animal animal : strongestAnimals){
             animal.energy += proteinToShare;
         }
         return true;

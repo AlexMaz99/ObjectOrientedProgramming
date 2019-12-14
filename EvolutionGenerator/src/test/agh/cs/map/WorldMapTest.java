@@ -3,7 +3,6 @@ package agh.cs.map;
 import agh.cs.mapElements.Animal;
 import agh.cs.mapElements.IMapElement;
 import agh.cs.position.Vector2d;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import org.junit.jupiter.api.Test;
 
@@ -168,4 +167,85 @@ public class WorldMapTest { //TODO: make tests
         }
     }
 
+    @Test
+    void procreate() {
+        Animal animal1 = new Animal(map, new Vector2d(2, 3), 20);
+        Animal animal2 = new Animal(map, new Vector2d(2, 3), 20);
+        Animal animal3 = new Animal(map, new Vector2d(2,3), 8);
+        Animal animal4 = new Animal(map, new Vector2d(2,3),7);
+        map.place(animal1);
+        map.place(animal2);
+        map.place(animal3);
+        map.place(animal4);
+
+        Animal animal5 = new Animal(map, new Vector2d(1, 1), 20);
+        Animal animal6 = new Animal(map, new Vector2d(1, 1), 16);
+        Animal animal7 = new Animal(map, new Vector2d(1,1), 8);
+        Animal animal8 = new Animal(map, new Vector2d(1,1),7);
+        map.place(animal5);
+        map.place(animal6);
+        map.place(animal7);
+        map.place(animal8);
+
+        Animal animal9 = new Animal(map, new Vector2d(3, 3), 20);
+        Animal animal10 = new Animal(map, new Vector2d(3, 3), 16);
+        Animal animal11 = new Animal(map, new Vector2d(3,3), 16);
+        Animal animal12 = new Animal(map, new Vector2d(3,3),16);
+        map.place(animal9);
+        map.place(animal10);
+        map.place(animal11);
+        map.place(animal12);
+
+        Animal animal13 = new Animal(map, new Vector2d(5, 5), 20);
+        Animal animal14 = new Animal(map, new Vector2d(5, 5), 16);
+        map.place(animal13);
+        map.place(animal14);
+        map.procreate();
+
+        List<Animal> animals = map.getAnimals();
+        assertEquals(map.getAnimals().size(),18);
+        assertTrue(animal1.getEnergy() == 15);
+        assertTrue(animal2.getEnergy() == 15);
+        assertTrue(animals.get(14).getEnergy() == 10);
+
+        assertTrue(animal5.getEnergy() == 15);
+        assertTrue(animal6.getEnergy() == 12);
+        assertTrue(animals.get(15).getEnergy() == 9);
+
+        assertTrue(animal9.getEnergy() == 15);
+        assertTrue(animals.get(16).getEnergy() == 9);
+
+        assertTrue(animal13.getEnergy() == 15);
+        assertTrue(animal14.getEnergy() == 12);
+        assertTrue(animals.get(17).getEnergy() == 9);
+        assertTrue(map.getAnimals().size()==18);
+
+    }
+
+    @Test
+    void eatGrass() {
+        map.generateGrass();
+        Vector2d position = new Vector2d(0,0);
+        for (int i=0; i<=10; i++){
+            for (int j=0; j<=10; j++){
+                if (map.isOccupied(new Vector2d(i,j))){
+                    position = new Vector2d(i,j);
+                }
+            }
+        }
+        Animal animal1 = new Animal(map, position, 20);
+        Animal animal2 = new Animal(map, position, 20);
+        Animal animal3 = new Animal(map, position, 20);
+        map.place(animal1);
+        map.place(animal2);
+        map.place(animal3);
+
+        map.eatGrass();
+        assertEquals(animal1.getEnergy(), 21);
+        assertEquals(animal2.getEnergy(), 21);
+        assertEquals(animal3.getEnergy(), 21);
+
+        List <IMapElement> elements = map.objectsAt(position);
+        assertEquals(elements.size(), 3);
+    }
 }

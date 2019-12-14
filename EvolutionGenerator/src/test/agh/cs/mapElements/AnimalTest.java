@@ -2,8 +2,6 @@ package agh.cs.mapElements;
 
 import agh.cs.map.IWorldMap;
 import agh.cs.map.WorldMap;
-import agh.cs.mapElements.Animal;
-import agh.cs.mapElements.Grass;
 import agh.cs.position.Vector2d;
 import org.junit.jupiter.api.Test;
 

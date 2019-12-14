@@ -64,4 +64,9 @@ public interface IWorldMap {
     int getMoveEnergy();
 
     void placeFirstAnimals(int numberOfAnimals);
+    List<Animal> getStrongestAnimals(List<Animal> animals);
+    List<Animal> chooseAnimals(List <IMapElement> elements);
+    void procreate();
+    void generateGrass();
+    void eatGrass();
 }

@@ -9,7 +9,7 @@ public class World {
         IWorldMap map = new WorldMap(10, 10, 0.4, 3, 1, 20);
         ((WorldMap) map).placeFirstAnimals(10);
         System.out.println(map);
-        for (int i = 0; i < 11; i++) {
+        for (int i = 0; i < 20; i++) {
             ((WorldMap) map).anotherDay();
 
 
