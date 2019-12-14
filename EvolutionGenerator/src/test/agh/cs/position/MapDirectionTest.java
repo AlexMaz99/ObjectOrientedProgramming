@@ -1,3 +1,5 @@
+package agh.cs.position;
+
 import agh.cs.position.MapDirection;
 import agh.cs.position.Vector2d;
 import org.junit.jupiter.api.Test;

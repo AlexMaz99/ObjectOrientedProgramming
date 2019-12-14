@@ -3,6 +3,7 @@ package agh.cs.map;
 import agh.cs.position.Vector2d;
 import agh.cs.mapElements.Animal;
 import agh.cs.mapElements.IMapElement;
+import com.google.common.collect.ListMultimap;
 
 import java.util.List;
 
@@ -53,6 +54,14 @@ public interface IWorldMap {
      * @return Object or null if the position is not occupied.
      */
     List<IMapElement> objectsAt(Vector2d position);
+    List<Animal> getAnimals();
+    ListMultimap<Vector2d, IMapElement> getElementsMap();
     Vector2d correctPosition(Vector2d position);
+    Vector2d getLowerLeft();
+    Vector2d getUpperRight();
+    Vector2d getJungleLowerLeft();
+    Vector2d getJungleUpperRight();
     int getMoveEnergy();
+
+    void placeFirstAnimals(int numberOfAnimals);
 }

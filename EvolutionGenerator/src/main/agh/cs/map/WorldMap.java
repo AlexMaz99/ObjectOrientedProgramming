@@ -71,7 +71,7 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver { //TODO: im
         this.animals.remove(animal);
         elements.remove(animal);
     }
-    public void removeGrass(Grass grass){
+    private void removeGrass(Grass grass){
         List <IMapElement> elements =  this.elementsMap.get(grass.getPosition());
         elements.remove(grass);
     }
@@ -213,4 +213,9 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver { //TODO: im
     public List<Animal> getAnimals(){
         return this.animals;
     }
+    public Vector2d getLowerLeft(){ return this.lowerLeft; }
+    public Vector2d getUpperRight() { return this.upperRight; }
+    public Vector2d getJungleLowerLeft() { return this.jungleLowerLeft; }
+    public Vector2d getJungleUpperRight() { return this.jungleUpperRight; }
+    public ListMultimap<Vector2d, IMapElement> getElementsMap() { return this.elementsMap; }
 }

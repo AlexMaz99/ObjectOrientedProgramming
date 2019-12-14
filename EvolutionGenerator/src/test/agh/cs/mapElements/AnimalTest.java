@@ -1,3 +1,5 @@
+package agh.cs.mapElements;
+
 import agh.cs.map.IWorldMap;
 import agh.cs.map.WorldMap;
 import agh.cs.mapElements.Animal;

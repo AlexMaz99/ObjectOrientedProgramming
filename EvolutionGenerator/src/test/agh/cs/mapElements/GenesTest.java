@@ -1,3 +1,5 @@
+package agh.cs.mapElements;
+
 import agh.cs.mapElements.Genes;
 import org.junit.jupiter.api.Test;
 
