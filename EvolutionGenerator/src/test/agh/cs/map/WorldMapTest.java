@@ -11,7 +11,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class WorldMapTest { //TODO: make tests
-    private IWorldMap map = new WorldMap(10, 10, 0.4, 3, 1, 20);
+    private IWorldMap map = new WorldMap(10, 10, 0.4, 3, 1, 20,0);
     @Test
     void correctPosition() {
         Vector2d lowerLeft = map.getLowerLeft();

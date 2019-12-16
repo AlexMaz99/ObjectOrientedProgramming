@@ -23,8 +23,10 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
     private final int plantEnergy;
     private final int moveEnergy;
     private final int startEnergy;
+    private int day = 0;
+    private Random rand = new Random();
 
-    public WorldMap(int width, int height, double jungleRatio, int plantEnergy, int moveEnergy, int startEnergy){
+    public WorldMap(int width, int height, double jungleRatio, int plantEnergy, int moveEnergy, int startEnergy, int startNumberOfAnimals){
         this.lowerLeft = new Vector2d(0,0);
         this.upperRight = new Vector2d (width, height);
 
@@ -38,11 +40,13 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
         this.startEnergy = startEnergy;
 
         if (!lowerLeft.precedes(jungleLowerLeft)) {
-            throw new IllegalArgumentException("Jungle lower left corner can't precede map lower left corner"+this.jungleLowerLeft);
+            throw new IllegalArgumentException("Jungle lower left corner can't precede map lower left corner");
         }
         if (!upperRight.follows(jungleUpperRight)) {
             throw new IllegalArgumentException("Jungle upper right corner can't follow map upper right corner");
         }
+
+        this.placeFirstAnimals(startNumberOfAnimals);
     }
 
     public void anotherDay (){
@@ -53,8 +57,12 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
         eatGrass();
         procreate();
         generateGrass();
-        System.out.println("Number of animals: " + animals.size());
-        System.out.println(this);
+        this.day++;
+        if (this.day % 100 == 0) {
+            System.out.println("Day " + this.day);
+            System.out.println("Number of animals: " + this.animals.size());
+            System.out.println(this);
+        }
     }
     private void removeDeadAnimals(){
         List <Animal> deadAnimals =  new ArrayList<>();
@@ -68,39 +76,40 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
         }
     }
     private void removeAnimal (Animal animal){
-        List <IMapElement> elements =  this.elementsMap.get(animal.getPosition());
+        /*List <IMapElement> elements =  this.elementsMap.get(animal.getPosition());
+        elements.remove(animal);*/
         this.animals.remove(animal);
-        elements.remove(animal);
+        this.elementsMap.remove(animal.getPosition(), animal);
     }
     private void removeGrass(Grass grass){
-        List <IMapElement> elements =  this.elementsMap.get(grass.getPosition());
-        elements.remove(grass);
+        /*List <IMapElement> elements =  this.elementsMap.get(grass.getPosition());
+        elements.remove(grass);*/
+        this.elementsMap.remove(grass.getPosition(), grass);
     }
     public void eatGrass (){
         for (Animal animal: this.animals){
             List <IMapElement> elements = this.objectsAt(animal.getPosition());
-            if(elements.get(0) instanceof Grass){
-                if(animal.eatGrass((Grass)elements.get(0))){
-                    removeGrass((Grass)elements.get(0));
-                }
+            if(elements.get(0) instanceof Grass && elements.size()>1){
+                animal.eatGrass((Grass)elements.get(0));
+                removeGrass((Grass)elements.get(0));
             }
         }
     }
-    public void procreate () { //TODO: check
-        List<Vector2d> positions = new ArrayList<>(); //lists of positions with animals
+    public void procreate () {
+        List<Vector2d> positions = new ArrayList<>(); //lists of positions with at least 2 animals
         for (Animal animal : this.animals) {
-            if (!positions.contains(animal.getPosition())) {
+            if (objectsAt(animal.getPosition()).size() > 1 && !positions.contains(animal.getPosition())) {
                 positions.add(animal.getPosition());
             }
         }
 
         for (Vector2d position : positions) {
-            List<Animal> animalsFromElements = this.chooseAnimals(this.objectsAt(position));
-            if (animalsFromElements.size() > 1) {
-                List<Animal> strongestAnimals = this.getStrongestAnimals(animalsFromElements); // list of animals with biggest energy
-                if (strongestAnimals.size() == 2) strongestAnimals.get(0).reproduce(strongestAnimals.get(1));
+            List<Animal> animalsAtTheSamePosition = this.chooseAnimals(this.objectsAt(position));
+            if (animalsAtTheSamePosition.size() > 1) {
+                List<Animal> strongestAnimals = this.getStrongestAnimals(animalsAtTheSamePosition); // list of animals with highest energy on the position
+                if (strongestAnimals.size() == 2) strongestAnimals.get(0).reproduce(strongestAnimals.get(1)); // if there are two strongest animals with the same energy
 
-                else if (strongestAnimals.size() > 2) {
+                else if (strongestAnimals.size() > 2) { // if there are more than two strongest animals, we randomly select two of them
                     int x = new Random().nextInt(strongestAnimals.size());
                     int y;
                     do {
@@ -109,12 +118,12 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
                     strongestAnimals.get(x).reproduce(strongestAnimals.get(y));
                 }
 
-                else if (strongestAnimals.size() == 1) { // if there is one strongest animal
+                else if (strongestAnimals.size() == 1) { // if there is only one strongest animal
                     Animal animal1 = strongestAnimals.get(0);
-                    List<Animal> secondStrongestAnimals = animalsFromElements;
+                    List<Animal> secondStrongestAnimals = animalsAtTheSamePosition; // list of animals with the second highest energy on the position
 
                     secondStrongestAnimals.remove(animal1);
-                    secondStrongestAnimals = this.getStrongestAnimals(secondStrongestAnimals); // list of the second strongest animals
+                    secondStrongestAnimals = this.getStrongestAnimals(secondStrongestAnimals);
 
                     if (secondStrongestAnimals.size() == 1) animal1.reproduce(secondStrongestAnimals.get(0));
 
@@ -169,7 +178,6 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
 
     @Override
     public boolean isOccupied(Vector2d position) {
-        /*return this.elementsMap.containsKey(position);*/
         return objectsAt(position).size()!=0;
     }
 
@@ -201,23 +209,30 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
     }
 
     public void generateGrass(){
-        int x,y;
-        int counter = (upperRight.x - lowerLeft.x) * (upperRight.y - lowerLeft.y);
-        Vector2d grassPosition;
+        int xSavanna,ySavanna;
+        int savannaArea = (upperRight.x - lowerLeft.x) * (upperRight.y - lowerLeft.y);
+        Vector2d savannaGrass;
         do{
-            x = new Random().nextInt(upperRight.x + 1);
-            y = new Random().nextInt(upperRight.y + 1);
-            grassPosition = new Vector2d(x,y);
-        } while (this.isOccupied(grassPosition) && jungleLowerLeft.precedes(grassPosition) && jungleUpperRight.follows(grassPosition) && counter -- >=0);
-        this.elementsMap.put (grassPosition, new Grass(grassPosition, plantEnergy));
+            xSavanna = rand.nextInt(upperRight.x + 1);
+            ySavanna = rand.nextInt(upperRight.y + 1);
+            savannaGrass = new Vector2d(xSavanna,ySavanna);
+            savannaArea --;
+            if (savannaArea < 0) break;
+        } while (this.isOccupied(savannaGrass) || this.insideJungle(savannaGrass));
+        this.elementsMap.put (savannaGrass, new Grass(savannaGrass, plantEnergy));
 
-        counter = (jungleUpperRight.x - jungleLowerLeft.x) * (jungleUpperRight.y - jungleLowerLeft.y);
+        int jungleArea = (jungleUpperRight.x - jungleLowerLeft.x) * (jungleUpperRight.y - jungleLowerLeft.y);
+        int xJungle, yJungle;
+        Vector2d jungleGrass;
+
         do{
-            x = new Random().nextInt(jungleUpperRight.x - jungleLowerLeft.x + 1) + jungleLowerLeft.x;
-            y = new Random().nextInt (jungleUpperRight.y - jungleLowerLeft.y + 1) + jungleLowerLeft.y;
-            grassPosition = new Vector2d(x,y);
-        } while (this.isOccupied(grassPosition) && counter>=0);
-        this.elementsMap.put (grassPosition, new Grass(grassPosition, plantEnergy));
+            xJungle = rand.nextInt(jungleUpperRight.x - jungleLowerLeft.x + 1) + jungleLowerLeft.x;
+            yJungle = rand.nextInt (jungleUpperRight.y - jungleLowerLeft.y + 1) + jungleLowerLeft.y;
+            jungleGrass = new Vector2d(xJungle,yJungle);
+            jungleArea--;
+            if (jungleArea < 0) break;
+        } while (this.isOccupied(jungleGrass));
+        this.elementsMap.put (jungleGrass, new Grass(jungleGrass, plantEnergy));
     }
     public List<Animal> chooseAnimals(List <IMapElement> elements){
         List <Animal> animals = new ArrayList<>();
@@ -245,6 +260,10 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
     public int getMoveEnergy(){
         return this.moveEnergy;
     }
+
+    public boolean insideJungle (Vector2d position){
+        return position.follows(this.jungleLowerLeft) && position.precedes(this.jungleUpperRight);
+    }
     public List<Animal> getAnimals(){
         return this.animals;
     }
@@ -252,5 +271,6 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
     public Vector2d getUpperRight() { return this.upperRight; }
     public Vector2d getJungleLowerLeft() { return this.jungleLowerLeft; }
     public Vector2d getJungleUpperRight() { return this.jungleUpperRight; }
+    public int getDay() { return this.day; }
     public ListMultimap<Vector2d, IMapElement> getElementsMap() { return this.elementsMap; }
 }

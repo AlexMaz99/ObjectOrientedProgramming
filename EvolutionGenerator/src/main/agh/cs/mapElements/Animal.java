@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static java.lang.Math.max;
-
 public class Animal implements IMapElement {
 
     private MapDirection direction;
@@ -19,7 +17,7 @@ public class Animal implements IMapElement {
     private final Genes genes;
     private IWorldMap map;
     private final int minEnergyToReproduce;
-    private final int moveEnergy;
+    private int age = 0;
     private List<IPositionChangeObserver> observers = new ArrayList<>();
 
     public Animal (IWorldMap map, Vector2d position, int startEnergy){
@@ -29,7 +27,6 @@ public class Animal implements IMapElement {
         this.direction = MapDirection.getRandomDirection();
         this.energy = startEnergy;
         this.minEnergyToReproduce = startEnergy/2;
-        this.moveEnergy = this.map.getMoveEnergy();
     }
 
     private Animal (IWorldMap map, Animal parent1, Animal parent2){
@@ -37,12 +34,11 @@ public class Animal implements IMapElement {
         this.position = parent1.position;
         this.genes = new Genes (parent1.genes, parent2.genes);
         this.direction = MapDirection.getRandomDirection();
-        this.moveEnergy = this.map.getMoveEnergy();
+        this.minEnergyToReproduce = parent1.minEnergyToReproduce;
 
         this.energy = (int) (0.25 * parent1.energy) + (int) (0.25 * parent2.energy);
-        parent1.energy = (int) (0.75 * parent1.energy);
-        parent2.energy = (int) (0.75 * parent2.energy);
-        this.minEnergyToReproduce = parent1.minEnergyToReproduce;
+        parent1.reduceEnergy((int) (0.25 * parent1.energy));
+        parent2.reduceEnergy((int) (0.25 * parent2.energy));
     }
 
     public void move (){
@@ -51,22 +47,22 @@ public class Animal implements IMapElement {
         Vector2d newPosition = this.position.add (this.direction.toUnitVector());
         newPosition = this.map.correctPosition(newPosition);
 
-        this.reduceEnergy(this.moveEnergy);
+        this.reduceEnergy(this.map.getMoveEnergy());
+        this.age++;
 
-        Vector2d oldPosition = this.getPosition();
+        Vector2d oldPosition = this.position;
         this.position = newPosition;
         this.positionChanged(oldPosition, newPosition);
     }
 
-    public boolean eatGrass(Grass grass){
+    public void eatGrass(Grass grass){
         List <Animal> strongestAnimals = this.map.getStrongestAnimals(this.map.chooseAnimals(this.map.objectsAt(grass.getPosition())));
-        if(strongestAnimals.size() == 0) return false;
+        if(strongestAnimals.size() == 0) return;
 
         int proteinToShare = grass.getProtein() / strongestAnimals.size();
         for (Animal animal : strongestAnimals){
             animal.energy += proteinToShare;
         }
-        return true;
     }
 
     public boolean canReproduce(){
@@ -89,8 +85,9 @@ public class Animal implements IMapElement {
     }
 
     public String toString(){
-        if (this.isDead()) return "X";
-        return this.direction.toString();
+        if (this.isDead()) return "❌";
+        //return this.direction.toString();
+        return "\uD83D\uDC3B";
     }
 
     public void addObserver (IPositionChangeObserver observer){
@@ -117,5 +114,9 @@ public class Animal implements IMapElement {
 
     public MapDirection getDirection(){
         return this.direction;
+    }
+
+    public int getAge() {
+        return this.age;
     }
 }

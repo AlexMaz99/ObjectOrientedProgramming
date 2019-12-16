@@ -1,5 +1,7 @@
 package agh.cs.map;
 
+import agh.cs.mapElements.Animal;
+import agh.cs.mapElements.Grass;
 import agh.cs.mapElements.IMapElement;
 import agh.cs.position.Vector2d;
 
@@ -73,9 +75,19 @@ public class MapVisualizer {
         if (this.map.isOccupied(currentPosition)) {
             List<IMapElement> objects = this.map.objectsAt(currentPosition);
             Object object = this.map.objectsAt(currentPosition).get(0);
-            if (objects.size()>1) result = ""+ objects.size();
+            List<Animal> animalsAtPosition = this.map.chooseAnimals(objects);
+            if (animalsAtPosition.size()>1) result = "\uD83D\uDC3E";
+            /*else if (objects.size()>1) {
+                int counter=0;
+                for (IMapElement element: objects)
+                    if (element instanceof Grass)
+                        counter++;
+                result="?"+counter;
+            }*/
             else if (object != null) {
                 result = object.toString();
+                if (object instanceof Grass && this.map.insideJungle(((Grass) object).getPosition()))
+                    result = "\uD83C\uDF32";
             } else {
                 result = EMPTY_CELL;
             }

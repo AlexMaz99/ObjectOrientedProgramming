@@ -4,13 +4,14 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 public class Vector2d {
-    final public int x;
-    final public int y;
+    public final int x;
+    public final int y;
 
     public Vector2d(int x, int y) {
         this.x = x;
         this.y = y;
     }
+
     public String toString(){
         return "(" + this.x + "," + this.y + ")";
     }
@@ -55,7 +56,6 @@ public class Vector2d {
     public Vector2d opposite(){
         return new Vector2d (-this.x, -this.y);
     }
-
 
     @Override
     public int hashCode(){

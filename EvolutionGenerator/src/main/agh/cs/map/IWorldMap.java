@@ -62,6 +62,7 @@ public interface IWorldMap {
     Vector2d getJungleLowerLeft();
     Vector2d getJungleUpperRight();
     int getMoveEnergy();
+    int getDay();
 
     void placeFirstAnimals(int numberOfAnimals);
     List<Animal> getStrongestAnimals(List<Animal> animals);
@@ -69,4 +70,6 @@ public interface IWorldMap {
     void procreate();
     void generateGrass();
     void eatGrass();
+    void anotherDay();
+    boolean insideJungle(Vector2d position);
 }

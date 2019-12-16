@@ -6,27 +6,19 @@ import java.util.Random;
 public class Genes {
     private static final int NUMBEROFGENES = 32;
     private static final int NUMBEROFTYPE = 8;
-    private int [] genes = new int [NUMBEROFGENES];
+    private int [] dna = new int [NUMBEROFGENES];
     private Random random = new Random();
 
     public Genes(){
-        generateGens();
-    }
-
-    public Genes(Genes parent1, Genes parent2){
-        generateGens(parent1, parent2);
-    }
-
-    private void generateGens(){
         for (int i=0; i<NUMBEROFTYPE; i++){
-            this.genes[i]=i;
+            this.dna[i]=i;
         }
         for (int i=NUMBEROFTYPE; i<NUMBEROFGENES; i++)
-            this.genes[i]=new Random().nextInt(NUMBEROFTYPE);
-        Arrays.sort(this.genes);
+            this.dna[i]=new Random().nextInt(NUMBEROFTYPE);
+        Arrays.sort(this.dna);
     }
 
-    private void generateGens(Genes parent1Genes, Genes parent2Genes){
+    public Genes(Genes parent1Genes, Genes parent2Genes){
         int bound1 = random.nextInt(NUMBEROFGENES - 2) + 1;
         int bound2;
         do{
@@ -38,15 +30,19 @@ public class Genes {
             bound2 = bound1;
             bound1 = tmp;
         }
-        System.arraycopy(parent1Genes.genes, 0, this.genes, 0, bound1 + 1);
-        System.arraycopy(parent2Genes.genes, bound1 + 1, this.genes, bound1 + 1, bound2 - bound1);
-        System.arraycopy(parent1Genes.genes, bound2, this.genes, bound2 + 1, NUMBEROFGENES - bound2 - 1);
-        Arrays.sort(this.genes);
+        System.arraycopy(parent1Genes.dna, 0, this.dna, 0, bound1 + 1);
+        System.arraycopy(parent2Genes.dna, bound1 + 1, this.dna, bound1 + 1, bound2 - bound1);
+        System.arraycopy(parent1Genes.dna, bound2, this.dna, bound2 + 1, NUMBEROFGENES - bound2 - 1);
+        Arrays.sort(this.dna);
 
         //check if genes contains all types of genes
+        this.correctGenes();
+    }
+
+    private void correctGenes(){
         int [] typesOfGenes = new int[NUMBEROFTYPE];
         for (int i=0; i<32; i++) {
-            typesOfGenes[this.genes[i]] ++;
+            typesOfGenes[this.dna[i]] ++;
         }
         for (int i=0; i<NUMBEROFTYPE; i++){
             if (typesOfGenes[i] <= 0){
@@ -61,7 +57,7 @@ public class Genes {
         int counter = 0;
         for (int i=0; i<NUMBEROFTYPE; i++){
             while (typesOfGenes[i]--!=0){
-                this.genes[counter++] = i;
+                this.dna[counter++] = i;
             }
         }
     }
@@ -70,12 +66,12 @@ public class Genes {
     public String toString(){
         String dna = "";
         for (int i=0; i<NUMBEROFGENES; i++){
-            dna += this.genes[i];
+            dna += this.dna[i];
         }
         return dna;
     }
 
     public int getGeneByIndex (int i){
-        return this.genes[i];
+        return this.dna[i];
     }
 }

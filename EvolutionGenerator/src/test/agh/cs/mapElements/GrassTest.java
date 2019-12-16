@@ -12,8 +12,8 @@ public class GrassTest {
 
     @Test
     void GrassToString(){
-        assertEquals(grass1.toString(), "*");
-        assertEquals(grass2.toString(), "*");
+        assertEquals(grass1.toString(), "☘");
+        assertEquals(grass2.toString(), "☘");
     }
 
     @Test
