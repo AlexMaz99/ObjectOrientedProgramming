@@ -1,12 +1,12 @@
 package agh.cs.mapElements;
 
-import agh.cs.mapElements.Genes;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.RepeatedTest;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GenesTest {
-    @Test
+
+    @RepeatedTest(value = 100, name="Test {displayName} - {currentRepetition} / {totalRepetitions}")
     void Genes(){
         Genes genes = new Genes();
         Genes genes2 = new Genes();
@@ -19,6 +19,7 @@ public class GenesTest {
         int [] typesOfGenes = new int[8];
         int [] typesOfGenes2 = new int[8];
         int [] typesOfGenesFromParents = new int[8];
+
         for (int i=0; i<32; i++) {
             typesOfGenes[genes.getGeneByIndex(i)] += 1;
             typesOfGenes2[genes2.getGeneByIndex(i)] += 1;

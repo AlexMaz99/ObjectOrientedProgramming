@@ -1,7 +1,4 @@
 package agh.cs.position;
-
-import agh.cs.position.MapDirection;
-import agh.cs.position.Vector2d;
 import org.junit.jupiter.api.Test;
 
 import static agh.cs.position.MapDirection.*;
@@ -25,6 +22,15 @@ public class MapDirectionTest {
         assertThrows(IllegalArgumentException.class, () -> {
             EAST.rotation(8);
         });
+
+        assertEquals(SOUTHEAST.rotation(0), SOUTHEAST);
+        assertEquals(SOUTHEAST.rotation(1), SOUTH);
+        assertEquals(SOUTHEAST.rotation(2), SOUTHWEST);
+        assertEquals(SOUTHEAST.rotation(3), WEST);
+        assertEquals(SOUTHEAST.rotation(4), NORTHWEST);
+        assertEquals(SOUTHEAST.rotation(5), NORTH);
+        assertEquals(SOUTHEAST.rotation(6), NORTHEAST);
+        assertEquals(SOUTHEAST.rotation(7), EAST);
     }
 
     @Test
@@ -41,7 +47,7 @@ public class MapDirectionTest {
 
     @Test
     void getRandomDirection(){
-        for (int i=0; i< 16; i++) {
+        for (int i=0; i< 20; i++) {
             MapDirection direction = MapDirection.getRandomDirection();
             assertTrue(direction == NORTH || direction == NORTHEAST || direction == EAST || direction == SOUTHEAST || direction == SOUTH || direction == SOUTHWEST || direction == WEST || direction == NORTHWEST);
         }

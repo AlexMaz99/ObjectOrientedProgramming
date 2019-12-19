@@ -4,17 +4,17 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import java.io.*;
 
-public class WorldBuilder {
-    public int mapWidth;
-    public int mapHeight;
-    public int plantEnergy;
-    public int moveEnergy;
-    public int startEnergy;
-    public double jungleRatio;
-    public int startNumberOfAnimals;
+public class JSONReader {
+    private int mapWidth;
+    private int mapHeight;
+    private int plantEnergy;
+    private int moveEnergy;
+    private int startEnergy;
+    private double jungleRatio;
+    private int startNumberOfAnimals;
 
 
-    public WorldBuilder() {
+    public JSONReader() {
         JSONParser jsonParser = new JSONParser();
         String dir = System.getProperty("user.dir");
 
@@ -40,6 +40,33 @@ public class WorldBuilder {
 
     }
 
+    public double getJungleRatio() {
+        return jungleRatio;
+    }
+
+    public int getMapHeight() {
+        return mapHeight;
+    }
+
+    public int getMapWidth() {
+        return mapWidth;
+    }
+
+    public int getMoveEnergy() {
+        return moveEnergy;
+    }
+
+    public int getPlantEnergy() {
+        return plantEnergy;
+    }
+
+    public int getStartEnergy() {
+        return startEnergy;
+    }
+
+    public int getStartNumberOfAnimals() {
+        return startNumberOfAnimals;
+    }
 }
 
 

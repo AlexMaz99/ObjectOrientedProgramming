@@ -3,6 +3,7 @@ package agh.cs.mapElements;
 import agh.cs.map.IWorldMap;
 import agh.cs.map.WorldMap;
 import agh.cs.position.Vector2d;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,32 +11,34 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AnimalTest {
     private IWorldMap map = new WorldMap(10,20,0.4,6,1,15, 0);
 
-    @Test
+    @RepeatedTest(value = 100, name="Test {displayName} - {currentRepetition} / {totalRepetitions}")
     void move(){
-        ((WorldMap) map).placeFirstAnimals(10);
+        map.placeFirstAnimals(10);
         Vector2d position;
         int startEnergy = 15;
-        for (Animal animal : ((WorldMap) map).getAnimals()){
+        for (Animal animal : map.getAnimals()){
             position = animal.getPosition();
             animal.move();
             position = map.correctPosition(position.add(animal.getDirection().toUnitVector()));
             assertEquals(animal.getPosition(), position);
             assertEquals(animal.getEnergy(), startEnergy - 1);
+            assertTrue(map.getAnimals().size() == 10);
         }
-        for (Animal animal : ((WorldMap) map).getAnimals()){
+        for (Animal animal : map.getAnimals()){
             position = animal.getPosition();
             animal.move();
             position = map.correctPosition(position.add(animal.getDirection().toUnitVector()));
             assertEquals(animal.getPosition(), position);
             assertEquals(animal.getEnergy(), startEnergy - 2);
+            assertTrue(map.getAnimals().size() == 10);
         }
     }
 
     @Test
     void eatGrass(){
-        ((WorldMap) map).placeFirstAnimals(2);
-        Animal animal1 = ((WorldMap) map).getAnimals().get(0);
-        Animal animal2 = ((WorldMap) map).getAnimals().get(1);
+        map.placeFirstAnimals(2);
+        Animal animal1 = map.getAnimals().get(0);
+        Animal animal2 = map.getAnimals().get(1);
         Grass grass1 = new Grass (animal1.getPosition(), 6);
         Grass grass2 = new Grass (animal2.getPosition(), 6);
 
@@ -74,5 +77,49 @@ public class AnimalTest {
             animal1.move();
         }
         assertTrue(animal1.isDead());
+    }
+
+    @Test
+    void reproduce() {
+        Animal animal1 = new Animal(map, new Vector2d(1,2), 15);
+        Animal animal2 = new Animal(map, new Vector2d(1,2), 20);
+        map.place(animal1);
+        map.place(animal2);
+
+        animal1.reproduce(animal2);
+        assertTrue(map.getAnimals().size() == 3);
+        Animal baby = map.getAnimals().get(2);
+        assertEquals(baby.getEnergy(), (15/4 + 20/4));
+        assertEquals(animal1.getEnergy(), 15 - 15/4);
+        assertEquals(animal2.getEnergy(), 20 - 20/4);
+
+        Animal animal3 = new Animal(map, new Vector2d(3,4), 2);
+        Animal animal4 = new Animal(map, new Vector2d(3,4), 2);
+        map.place(animal3);
+        map.place(animal4);
+        animal3.reproduce(animal4);
+        assertFalse(map.getAnimals().size() == 6);
+        assertTrue(map.getAnimals().size() == 5);
+    }
+
+    @Test
+    void animalToString(){
+        Animal animal1 = new Animal(map, new Vector2d(1,1), 20);
+        Animal animal2 = new Animal(map, new Vector2d(1,1), 15);
+        map.place(animal1);
+        map.place(animal2);
+        for (int i=0; i<19; i++){
+            animal1.move();
+            assertEquals(animal1.toString(), "\uD83D\uDC3B");
+        }
+        animal1.move();
+        assertEquals(animal1.toString(),"❌" );
+
+        for (int i=0; i<14; i++){
+            animal2.move();
+            assertEquals(animal2.toString(),"\uD83D\uDC3B" );
+        }
+        animal2.move();
+        assertEquals(animal2.toString(),"❌" );
     }
 }

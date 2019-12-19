@@ -1,17 +1,45 @@
 package agh.cs.map;
 
 import agh.cs.mapElements.Animal;
+import agh.cs.mapElements.Grass;
 import agh.cs.mapElements.IMapElement;
 import agh.cs.position.Vector2d;
 import com.google.common.collect.ListMultimap;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class WorldMapTest { //TODO: make tests
     private IWorldMap map = new WorldMap(10, 10, 0.4, 3, 1, 20,0);
+
+    @Test
+    void createMap(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            IWorldMap map = new WorldMap(0, 10, 0.4, 3, 1, 20,0);
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            IWorldMap map = new WorldMap(10, 0, 0.4, 3, 1, 20,0);
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            IWorldMap map = new WorldMap(10, 10, 0, 3, 1, 20,0);
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            IWorldMap map = new WorldMap(10, 10, 0.4, 0, 1, 20,0);
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            IWorldMap map = new WorldMap(10, 10, 0.4, 3, 0, 20,0);
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            IWorldMap map = new WorldMap(10, 10, 0.4, 3, 1, 0,0);
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            IWorldMap map = new WorldMap(10, 10, 1.4, 3, 1, 20,0);
+        });
+    }
+
     @Test
     void correctPosition() {
         Vector2d lowerLeft = map.getLowerLeft();
@@ -224,7 +252,7 @@ public class WorldMapTest { //TODO: make tests
 
     @Test
     void eatGrass() {
-        map.generateGrass();
+        ((WorldMap)map).generateGrass();
         Vector2d position = new Vector2d(0,0);
         for (int i=0; i<=10; i++){
             for (int j=0; j<=10; j++){
@@ -247,5 +275,150 @@ public class WorldMapTest { //TODO: make tests
 
         List <IMapElement> elements = map.objectsAt(position);
         assertEquals(elements.size(), 3);
+    }
+
+    @RepeatedTest(value = 50, name="Test {displayName} - {currentRepetition} / {totalRepetitions}")
+    void generateGrass() {
+        ((WorldMap) map).generateGrass();
+
+        int counterJungle = 0;
+        int counterSavanna = 0;
+        for (int i=0; i<=10; i++){
+            for (int j=0; j<=10; j++){
+                if (map.isOccupied(new Vector2d(i,j))){
+                    if (map.insideJungle(new Vector2d(i, j))){
+                        counterJungle++;
+                    }
+                    else {
+                        counterSavanna++;
+                    }
+                }
+            }
+        }
+        assertEquals(counterJungle, 1);
+        assertEquals(counterSavanna, 1);
+
+        ((WorldMap) map).generateGrass();
+
+        counterJungle = 0;
+        counterSavanna = 0;
+        for (int i=0; i<=10; i++){
+            for (int j=0; j<=10; j++){
+                if (map.isOccupied(new Vector2d(i,j))){
+                    if (map.insideJungle(new Vector2d(i, j))){
+                        counterJungle++;
+                    }
+                    else {
+                        counterSavanna++;
+                    }
+                }
+            }
+        }
+        assertEquals(counterJungle, 2);
+        assertEquals(counterSavanna, 2);
+
+        for (int i=0; i<=10; i++){
+            for (int j=0; j<=10; j++){
+                map.place(new Animal(map, new Vector2d(i,j), 10));
+            }
+        }
+
+        ((WorldMap) map).generateGrass();
+        ((WorldMap) map).generateGrass();
+        ((WorldMap) map).generateGrass();
+
+        counterJungle = 0;
+        counterSavanna = 0;
+        for (int i=0; i<=10; i++){
+            for (int j=0; j<=10; j++){
+                if (map.isOccupied(new Vector2d(i,j)) && map.objectsAt(new Vector2d(i,j)).get(0) instanceof Grass){
+                    if (map.insideJungle(new Vector2d(i, j))){
+                        counterJungle++;
+                    }
+                    else {
+                        counterSavanna++;
+                    }
+                }
+            }
+        }
+        assertEquals(counterJungle, 2);
+        assertEquals(counterSavanna, 2);
+    }
+
+    @Test
+    void chooseAnimals() {
+        List <IMapElement> elements = new ArrayList<>();
+        elements.add(new Grass(new Vector2d(1,1), 10));
+        elements.add(new Animal(map, new Vector2d(1,1), 15));
+        elements.add(new Animal(map, new Vector2d(1,1), 10));
+        elements.add(new Animal(map, new Vector2d(1,1), 8));
+
+        assertEquals(elements.size(), 4);
+        List <Animal> animals = map.chooseAnimals(elements);
+        for (Animal animal: animals){
+            assertTrue(animal instanceof Animal);
+        }
+        assertEquals(animals.size(), 3);
+
+        List <IMapElement> elements2 = new ArrayList<>();
+        elements2.add(new Animal(map, new Vector2d(2,2), 15));
+        elements2.add(new Animal(map, new Vector2d(2,2), 10));
+        elements2.add(new Animal(map, new Vector2d(2,2), 8));
+
+        assertEquals(elements2.size(), 3);
+        List <Animal> animals2 = map.chooseAnimals(elements2);
+        for (Animal animal: animals2){
+            assertTrue(animal instanceof Animal);
+        }
+        assertEquals(animals2.size(), 3);
+
+        List <IMapElement> elements3 = new ArrayList<>();
+        assertEquals(elements3.size(), 0);
+        List <Animal> animals3 = map.chooseAnimals(elements3);
+        assertEquals(animals3.size(), 0);
+    }
+
+    @Test
+    void getStrongestAnimals(){
+        List <Animal> animals = new ArrayList<>();
+        animals.add(new Animal(map, new Vector2d(1,1),10));
+        animals.add(new Animal(map, new Vector2d(1,1),9));
+        animals.add(new Animal(map, new Vector2d(1,1),10));
+        animals.add(new Animal(map, new Vector2d(1,1),8));
+        animals.add(new Animal(map, new Vector2d(1,1),10));
+        animals.add(new Animal(map, new Vector2d(1,1),5));
+
+        List <Animal> strongestAnimals = map.getStrongestAnimals(animals);
+        assertEquals(strongestAnimals.size(), 3);
+        for (Animal strongestAnimal: strongestAnimals){
+            assertEquals(strongestAnimal.getEnergy(), 10);
+        }
+
+        animals.add(new Animal(map, new Vector2d(1,1),20));
+        animals.add(new Animal(map, new Vector2d(1,1),19));
+        animals.add(new Animal(map, new Vector2d(1,1),100));
+
+        List <Animal> strongestAnimals2 = map.getStrongestAnimals(animals);
+        assertEquals(strongestAnimals2.size(), 1);
+        assertEquals(strongestAnimals2.get(0).getEnergy(), 100);
+    }
+
+    @Test
+    void insideJungle(){
+        Vector2d jungleLowerLeft = map.getJungleLowerLeft();
+        Vector2d jungleUpperRight = map.getJungleUpperRight();
+        Vector2d position1 = map.getLowerLeft();
+        Vector2d position2 = new Vector2d(jungleLowerLeft.x, jungleLowerLeft.y);
+        Vector2d position3 = new Vector2d(jungleUpperRight.x, jungleUpperRight.y);
+        Vector2d position4 = new Vector2d(jungleLowerLeft.x, jungleUpperRight.y);
+        Vector2d position5 = new Vector2d(jungleUpperRight.x, jungleLowerLeft.y);
+        Vector2d position6 = map.getUpperRight();
+
+        assertFalse(map.insideJungle(position1));
+        assertTrue(map.insideJungle(position2));
+        assertTrue(map.insideJungle(position3));
+        assertTrue(map.insideJungle(position4));
+        assertTrue(map.insideJungle(position5));
+        assertFalse(map.insideJungle(position6));
     }
 }

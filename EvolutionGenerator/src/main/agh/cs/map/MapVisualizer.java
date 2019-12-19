@@ -8,7 +8,7 @@ import agh.cs.position.Vector2d;
 import java.util.List;
 
 public class MapVisualizer {
-    private static final String EMPTY_CELL = " ";
+    private static final String EMPTY_CELL = "    ";
     private static final String FRAME_SEGMENT = "-";
     private static final String CELL_SEGMENT = "|";
     private IWorldMap map;
@@ -64,7 +64,7 @@ public class MapVisualizer {
         StringBuilder builder = new StringBuilder();
         builder.append(" y\\x ");
         for (int j = lowerLeft.x; j < upperRight.x + 1; j++) {
-            builder.append(String.format("%2d", j));
+            builder.append(String.format("%2d ", j));
         }
         builder.append(System.lineSeparator());
         return builder.toString();
@@ -77,13 +77,6 @@ public class MapVisualizer {
             Object object = this.map.objectsAt(currentPosition).get(0);
             List<Animal> animalsAtPosition = this.map.chooseAnimals(objects);
             if (animalsAtPosition.size()>1) result = "\uD83D\uDC3E";
-            /*else if (objects.size()>1) {
-                int counter=0;
-                for (IMapElement element: objects)
-                    if (element instanceof Grass)
-                        counter++;
-                result="?"+counter;
-            }*/
             else if (object != null) {
                 result = object.toString();
                 if (object instanceof Grass && this.map.insideJungle(((Grass) object).getPosition()))

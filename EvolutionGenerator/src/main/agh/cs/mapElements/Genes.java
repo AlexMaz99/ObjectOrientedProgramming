@@ -18,7 +18,7 @@ public class Genes {
         Arrays.sort(this.dna);
     }
 
-    public Genes(Genes parent1Genes, Genes parent2Genes){
+    Genes(Genes parent1Genes, Genes parent2Genes){
         int bound1 = random.nextInt(NUMBEROFGENES - 2) + 1;
         int bound2;
         do{

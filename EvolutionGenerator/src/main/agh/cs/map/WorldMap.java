@@ -1,6 +1,7 @@
 package agh.cs.map;
 
 import agh.cs.mapElements.Grass;
+import agh.cs.position.MapDirection;
 import agh.cs.position.Vector2d;
 import agh.cs.mapElements.Animal;
 import agh.cs.mapElements.IMapElement;
@@ -8,6 +9,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import java.util.*;
 
+import static agh.cs.position.MapDirection.NORTH;
+import static agh.cs.position.MapDirection.SOUTHEAST;
 import static java.lang.Math.max;
 
 public class WorldMap implements IWorldMap, IPositionChangeObserver {
@@ -24,6 +27,7 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
     private final int moveEnergy;
     private final int startEnergy;
     private int day = 0;
+    private List<Animal> deadAnimals = new ArrayList<>();
     private Random rand = new Random();
 
     public WorldMap(int width, int height, double jungleRatio, int plantEnergy, int moveEnergy, int startEnergy, int startNumberOfAnimals){
@@ -45,6 +49,12 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
         if (!upperRight.follows(jungleUpperRight)) {
             throw new IllegalArgumentException("Jungle upper right corner can't follow map upper right corner");
         }
+        if (width <= 0 || height <= 0 || jungleRatio <= 0 || plantEnergy <= 0 || moveEnergy <= 0 ||startEnergy <= 0){
+            throw new IllegalArgumentException("Start parameters must be bigger than 0");
+        }
+        if (startNumberOfAnimals > width * height){
+            throw new IllegalArgumentException("This number of animals will not fit on the map");
+        }
 
         this.placeFirstAnimals(startNumberOfAnimals);
     }
@@ -58,11 +68,11 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
         procreate();
         generateGrass();
         this.day++;
-        if (this.day % 100 == 0) {
+        /*if (this.day % 100 == 0) {
             System.out.println("Day " + this.day);
             System.out.println("Number of animals: " + this.animals.size());
             System.out.println(this);
-        }
+        }*/
     }
     private void removeDeadAnimals(){
         List <Animal> deadAnimals =  new ArrayList<>();
@@ -78,6 +88,7 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
     private void removeAnimal (Animal animal){
         /*List <IMapElement> elements =  this.elementsMap.get(animal.getPosition());
         elements.remove(animal);*/
+        this.deadAnimals.add(animal);
         this.animals.remove(animal);
         this.elementsMap.remove(animal.getPosition(), animal);
     }
@@ -208,7 +219,7 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
         return mapVisualizer.draw(this.lowerLeft, this.upperRight);
     }
 
-    public void generateGrass(){
+    void generateGrass(){
         int xSavanna,ySavanna;
         int savannaArea = (upperRight.x - lowerLeft.x) * (upperRight.y - lowerLeft.y);
         Vector2d savannaGrass;
@@ -257,10 +268,27 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
         }
         return strongestAnimals;
     }
+    @Override
+    public Vector2d babyPosition(Animal parent){
+        List<Vector2d> emptyPositions = new ArrayList<>();
+        MapDirection direction = NORTH;
+        Vector2d babyPosition;
+        for (int i=0; i<8; i++){
+            babyPosition = parent.getPosition().add(direction.toUnitVector());
+            babyPosition = this.correctPosition(babyPosition);
+            if (!this.isOccupied(babyPosition)){
+                emptyPositions.add(babyPosition);
+            }
+            direction.rotation(1);
+        }
+        if (emptyPositions.size() == 0) return parent.getPosition();
+        return emptyPositions.get(rand.nextInt(emptyPositions.size()));
+
+    }
+
     public int getMoveEnergy(){
         return this.moveEnergy;
     }
-
     public boolean insideJungle (Vector2d position){
         return position.follows(this.jungleLowerLeft) && position.precedes(this.jungleUpperRight);
     }
@@ -272,5 +300,30 @@ public class WorldMap implements IWorldMap, IPositionChangeObserver {
     public Vector2d getJungleLowerLeft() { return this.jungleLowerLeft; }
     public Vector2d getJungleUpperRight() { return this.jungleUpperRight; }
     public int getDay() { return this.day; }
+    public int getStartEnergy() { return this.startEnergy; }
+    public boolean areAnimalsAlive() {
+        return this.animals.size() > 0;
+    }
     public ListMultimap<Vector2d, IMapElement> getElementsMap() { return this.elementsMap; }
+    public String getStatistics(){
+        int averageAge = 0;
+        int averageEnergy = 0;
+        for (Animal animal: this.deadAnimals){
+            averageAge += animal.getAge();
+        }
+        for (Animal animal: this.animals){
+            averageEnergy += animal.getEnergy();
+        }
+        if (animals.size() != 0) {
+            averageEnergy /= this.animals.size();
+        }
+        if (deadAnimals.size() != 0) {
+            averageAge /= this.deadAnimals.size();
+        }
+        return "Day: " + this.day + "\n"
+                + "Number of living animals: " + this.animals.size() + "\n"
+                + "Average energy of living animals: " + averageEnergy + "\n"
+                + "Number of dead animals: " + this.deadAnimals.size() + "\n"
+                + "Average age of dead animals: " + averageAge;
+    }
 }

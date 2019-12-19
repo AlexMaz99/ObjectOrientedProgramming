@@ -1,8 +1,5 @@
 package agh.cs.position;
-
-import agh.cs.position.Vector2d;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class Vector2dTest {
@@ -11,11 +8,17 @@ public class Vector2dTest {
         Vector2d x = new Vector2d (1,2);
         assertTrue (x.equals(new Vector2d (1,2)));
         assertFalse (x.equals (new Vector2d (2,4)));
+
+        Vector2d y = new Vector2d (5,10);
+        assertTrue (y.equals(new Vector2d(5,10)));
+        assertFalse (y.equals(x));
     }
     @Test
     void tooString(){
         assertEquals(new Vector2d(1,2).toString(), "(1,2)");
         assertEquals(new Vector2d(-1,-2).toString(), "(-1,-2)");
+        assertEquals(new Vector2d(5,-10).toString(), "(5,-10)");
+        assertEquals(new Vector2d(-20,100).toString(), "(-20,100)");
     }
     @Test
     void precedes(){

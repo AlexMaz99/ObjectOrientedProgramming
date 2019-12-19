@@ -1,6 +1,5 @@
 package agh.cs.mapElements;
 
-import agh.cs.mapElements.Grass;
 import agh.cs.position.Vector2d;
 import org.junit.jupiter.api.Test;
 
@@ -20,5 +19,11 @@ public class GrassTest {
     void getPosition(){
         assertEquals(grass1.getPosition(), new Vector2d (1,2));
         assertEquals(grass2.getPosition(), new Vector2d (5,10));
+    }
+
+    @Test
+    void getProtein(){
+        assertEquals(grass1.getProtein(), 5);
+        assertEquals(grass2.getProtein(), 4);
     }
 }

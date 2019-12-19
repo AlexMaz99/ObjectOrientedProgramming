@@ -61,15 +61,18 @@ public interface IWorldMap {
     Vector2d getUpperRight();
     Vector2d getJungleLowerLeft();
     Vector2d getJungleUpperRight();
+    Vector2d babyPosition(Animal parent);
     int getMoveEnergy();
     int getDay();
+    int getStartEnergy();
 
     void placeFirstAnimals(int numberOfAnimals);
     List<Animal> getStrongestAnimals(List<Animal> animals);
     List<Animal> chooseAnimals(List <IMapElement> elements);
     void procreate();
-    void generateGrass();
     void eatGrass();
     void anotherDay();
+    String getStatistics();
     boolean insideJungle(Vector2d position);
+    boolean areAnimalsAlive();
 }

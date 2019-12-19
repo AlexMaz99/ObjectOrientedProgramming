@@ -26,12 +26,12 @@ public class Animal implements IMapElement {
         this.genes = new Genes();
         this.direction = MapDirection.getRandomDirection();
         this.energy = startEnergy;
-        this.minEnergyToReproduce = startEnergy/2;
+        this.minEnergyToReproduce = this.map.getStartEnergy()/2;
     }
 
     private Animal (IWorldMap map, Animal parent1, Animal parent2){
         this.map = map;
-        this.position = parent1.position;
+        this.position = this.map.babyPosition(parent1);
         this.genes = new Genes (parent1.genes, parent2.genes);
         this.direction = MapDirection.getRandomDirection();
         this.minEnergyToReproduce = parent1.minEnergyToReproduce;
