@@ -7,14 +7,13 @@ public class WorldSimulator {
     private int day;
 
     public WorldSimulator(JSONReader jsonReader){
-        IWorldMap map = new WorldMap(jsonReader.getMapWidth(),
+        this.map = new WorldMap(jsonReader.getMapWidth(),
                 jsonReader.getMapHeight(),
                 jsonReader.getJungleRatio(),
                 jsonReader.getPlantEnergy(),
                 jsonReader.getMoveEnergy(),
                 jsonReader.getStartEnergy(),
                 jsonReader.getStartNumberOfAnimals());
-        this.map = map;
         this.day = 0;
     }
 

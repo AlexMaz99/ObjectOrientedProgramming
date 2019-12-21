@@ -405,9 +405,6 @@ public class WorldMapTest {
 
         assertEquals(elements.size(), 4);
         List <Animal> animals = map.selectAnimals(elements);
-        for (Animal animal: animals){
-            assertTrue(animal instanceof Animal);
-        }
         assertEquals(animals.size(), 3);
 
         List <IMapElement> elements2 = new ArrayList<>();
@@ -417,9 +414,6 @@ public class WorldMapTest {
 
         assertEquals(elements2.size(), 3);
         List <Animal> animals2 = map.selectAnimals(elements2);
-        for (Animal animal: animals2){
-            assertTrue(animal instanceof Animal);
-        }
         assertEquals(animals2.size(), 3);
 
         List <IMapElement> elements3 = new ArrayList<>();

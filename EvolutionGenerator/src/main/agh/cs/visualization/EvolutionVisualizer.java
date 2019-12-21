@@ -1,5 +1,4 @@
 package agh.cs.visualization;
-import agh.cs.map.IWorldMap;
 import agh.cs.map.WorldSimulator;
 
 import javax.swing.*;
@@ -14,7 +13,6 @@ public class EvolutionVisualizer {
     private JButton startStopButton;
     private JButton stopSimulationButton;
     private WorldSimulator worldSimulator;
-
 
     public EvolutionVisualizer(WorldSimulator worldSimulator){
         this.init();
@@ -90,7 +88,7 @@ public class EvolutionVisualizer {
     public void startAnimation(){
         if (timer == null) {
             // Start the animation by creating a Timer that
-            // will fire an event every 50 milliseconds, and
+            // will fire an event every 100 milliseconds, and
             // will send those events to timerListener.
             timer = new Timer(100, timerListener);
             timer.start();  // Make the time start running.
