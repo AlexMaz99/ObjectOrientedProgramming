@@ -1,6 +1,6 @@
 package agh.cs.mapElements;
 
-import agh.cs.position.Vector2d;
+import agh.cs.structures.Vector2d;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

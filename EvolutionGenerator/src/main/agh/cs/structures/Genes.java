@@ -1,4 +1,4 @@
-package agh.cs.mapElements;
+package agh.cs.structures;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -18,7 +18,7 @@ public class Genes {
         Arrays.sort(this.dna);
     }
 
-    Genes(Genes parent1Genes, Genes parent2Genes){
+    public Genes(Genes parent1Genes, Genes parent2Genes){
         int bound1 = random.nextInt(NUMBEROFGENES - 2) + 1;
         int bound2;
         do{
@@ -71,7 +71,7 @@ public class Genes {
         return dna;
     }
 
-    public int getGeneByIndex (int i){
+    public int getGeneByIndex(int i){
         return this.dna[i];
     }
 }

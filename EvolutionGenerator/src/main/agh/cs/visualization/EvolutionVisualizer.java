@@ -1,21 +1,24 @@
-package agh.cs.map;
+package agh.cs.visualization;
+import agh.cs.map.IWorldMap;
+import agh.cs.map.WorldSimulator;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class Visualization {
+public class EvolutionVisualizer {
     private JFrame frame;
     private Timer timer;
     private JTextArea textArea;
     private JTextArea statistics;
     private JButton startStopButton;
     private JButton stopSimulationButton;
-    private IWorldMap map;
+    private WorldSimulator worldSimulator;
 
 
-    public Visualization(IWorldMap map){
+    public EvolutionVisualizer(WorldSimulator worldSimulator){
         this.init();
-        this.map = map;
+        this.worldSimulator = worldSimulator;
     }
 
     private void init(){
@@ -51,7 +54,7 @@ public class Visualization {
             }
         });
 
-        this.stopSimulationButton = new JButton("Zakończ");
+        this.stopSimulationButton = new JButton("End");
         stopSimulationButton.setBounds(50,60,80,20);
         stopSimulationButton.addActionListener(new ActionListener() {
             @Override
@@ -69,18 +72,18 @@ public class Visualization {
         // Define an action listener to respond to events
         // from the timer.
         public void actionPerformed(ActionEvent evt) {
-            if(!map.areAnimalsAlive()){
-                textArea.setText(map.toString());
+            if(!worldSimulator.getMap().areAnimalsAlive()){
+                textArea.setText(worldSimulator.getMap().toString());
                 startStopButton.setVisible(false);
                 timer.stop();
             }
-            statistics.setText(map.getStatistics());
+            statistics.setText(worldSimulator.getStatistics());
             frame.add(statistics);
             SwingUtilities.updateComponentTreeUI(frame);
-            textArea.setText(map.toString());
+            textArea.setText(worldSimulator.getMap().toString());
             frame.add(textArea);
             SwingUtilities.updateComponentTreeUI(frame);
-            map.anotherDay();
+            worldSimulator.anotherDay();
         }
     };
 
@@ -89,9 +92,9 @@ public class Visualization {
             // Start the animation by creating a Timer that
             // will fire an event every 50 milliseconds, and
             // will send those events to timerListener.
-            timer = new Timer(200, timerListener);
+            timer = new Timer(100, timerListener);
             timer.start();  // Make the time start running.
-            startStopButton.setText("Pauza");
+            startStopButton.setText("Pause");
         }
     }
 

@@ -1,5 +1,6 @@
-package agh.cs.mapElements;
+package agh.cs.structures;
 
+import agh.cs.structures.Genes;
 import org.junit.jupiter.api.RepeatedTest;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;

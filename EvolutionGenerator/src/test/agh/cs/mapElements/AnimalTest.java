@@ -2,7 +2,7 @@ package agh.cs.mapElements;
 
 import agh.cs.map.IWorldMap;
 import agh.cs.map.WorldMap;
-import agh.cs.position.Vector2d;
+import agh.cs.structures.Vector2d;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
@@ -87,7 +87,7 @@ public class AnimalTest {
         map.place(animal2);
 
         animal1.reproduce(animal2);
-        assertTrue(map.getAnimals().size() == 3);
+        assertEquals(map.getAnimals().size(), 3);
         Animal baby = map.getAnimals().get(2);
         assertEquals(baby.getEnergy(), (15/4 + 20/4));
         assertEquals(animal1.getEnergy(), 15 - 15/4);
@@ -98,8 +98,8 @@ public class AnimalTest {
         map.place(animal3);
         map.place(animal4);
         animal3.reproduce(animal4);
-        assertFalse(map.getAnimals().size() == 6);
-        assertTrue(map.getAnimals().size() == 5);
+        assertNotEquals(map.getAnimals().size(), 6);
+        assertEquals(map.getAnimals().size(), 5);
     }
 
     @Test
@@ -121,5 +121,76 @@ public class AnimalTest {
         }
         animal2.move();
         assertEquals(animal2.toString(),"❌" );
+    }
+
+   @RepeatedTest(value = 20, name="Test {displayName} - {currentRepetition} / {totalRepetitions}")
+    void babyPosition(){
+        Animal parent = new Animal(map, new Vector2d(3,3), 15);
+        Animal parent2 = new Animal(map, new Vector2d(3,3), 15);
+        Animal animal2 = new Animal(map, new Vector2d(2,2), 20);
+        map.place(parent);
+        map.place(parent2);
+        map.place(animal2);
+
+        Vector2d vector23 = new Vector2d(2,3);
+        Vector2d vector24 = new Vector2d(2,4);
+        Vector2d vector34 = new Vector2d(3,4);
+        Vector2d vector44 = new Vector2d(4,4);
+        Vector2d vector43 = new Vector2d(4,3);
+        Vector2d vector42 = new Vector2d(4,2);
+        Vector2d vector32 = new Vector2d(3,2);
+
+
+        Vector2d babyPosition = parent.babyPosition(parent);
+        assertTrue(babyPosition.equals(vector23)
+                    || babyPosition.equals(vector24)
+                    || babyPosition.equals(vector34)
+                    || babyPosition.equals(vector44)
+                    || babyPosition.equals(vector43)
+                    || babyPosition.equals(vector42)
+                    || babyPosition.equals(vector32));
+
+        map.place(new Animal(map, vector23, 10));
+        babyPosition = parent.babyPosition(parent);
+        assertTrue(babyPosition.equals(vector24)
+               || babyPosition.equals(vector34)
+               || babyPosition.equals(vector44)
+               || babyPosition.equals(vector43)
+               || babyPosition.equals(vector42)
+               || babyPosition.equals(vector32));
+
+       map.place(new Animal(map, vector24, 10));
+       babyPosition = parent.babyPosition(parent);
+       assertTrue(babyPosition.equals(vector34)
+               || babyPosition.equals(vector44)
+               || babyPosition.equals(vector43)
+               || babyPosition.equals(vector42)
+               || babyPosition.equals(vector32));
+
+       map.place(new Animal(map, vector34, 10));
+       babyPosition = parent.babyPosition(parent);
+       assertTrue(babyPosition.equals(vector44)
+               || babyPosition.equals(vector43)
+               || babyPosition.equals(vector42)
+               || babyPosition.equals(vector32));
+
+       map.place(new Animal(map, vector44, 10));
+       babyPosition = parent.babyPosition(parent);
+       assertTrue(babyPosition.equals(vector43)
+               || babyPosition.equals(vector42)
+               || babyPosition.equals(vector32));
+
+       map.place(new Animal(map, vector43, 10));
+       babyPosition = parent.babyPosition(parent);
+       assertTrue(babyPosition.equals(vector42)
+               || babyPosition.equals(vector32));
+
+       map.place(new Animal(map, vector42, 10));
+       babyPosition = parent.babyPosition(parent);
+       assertEquals(babyPosition, vector32);
+
+       map.place(new Animal(map, vector32, 10));
+       babyPosition = parent.babyPosition(parent);
+       assertEquals(babyPosition, new Vector2d(3,3));
     }
 }

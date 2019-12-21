@@ -40,31 +40,31 @@ public class JSONReader {
 
     }
 
-    public double getJungleRatio() {
+    double getJungleRatio() {
         return jungleRatio;
     }
 
-    public int getMapHeight() {
+    int getMapHeight() {
         return mapHeight;
     }
 
-    public int getMapWidth() {
+    int getMapWidth() {
         return mapWidth;
     }
 
-    public int getMoveEnergy() {
+    int getMoveEnergy() {
         return moveEnergy;
     }
 
-    public int getPlantEnergy() {
+    int getPlantEnergy() {
         return plantEnergy;
     }
 
-    public int getStartEnergy() {
+    int getStartEnergy() {
         return startEnergy;
     }
 
-    public int getStartNumberOfAnimals() {
+    int getStartNumberOfAnimals() {
         return startNumberOfAnimals;
     }
 }

@@ -1,4 +1,4 @@
-package agh.cs.position;
+package agh.cs.structures;
 
 import java.util.Random;
 

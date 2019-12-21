@@ -1,6 +1,6 @@
 package agh.cs.mapElements;
 
-import agh.cs.position.Vector2d;
+import agh.cs.structures.Vector2d;
 
 public class Grass implements IMapElement {
 
@@ -12,7 +12,7 @@ public class Grass implements IMapElement {
         this.protein = plantEnergy;
     }
 
-    public int getProtein(){
+    int getProtein(){
         return protein;
     }
 
@@ -20,7 +20,6 @@ public class Grass implements IMapElement {
         return position;
     }
 
-    @Override
     public String toString(){
         return "☘";
     }

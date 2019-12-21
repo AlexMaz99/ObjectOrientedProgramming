@@ -2,12 +2,13 @@ package agh.cs.mapElements;
 
 import agh.cs.map.IWorldMap;
 import agh.cs.map.IPositionChangeObserver;
-import agh.cs.position.MapDirection;
-import agh.cs.position.Vector2d;
+import agh.cs.structures.Genes;
+import agh.cs.structures.MapDirection;
+import agh.cs.structures.Vector2d;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+
+import static agh.cs.structures.MapDirection.NORTH;
 
 public class Animal implements IMapElement {
 
@@ -16,7 +17,6 @@ public class Animal implements IMapElement {
     private int energy;
     private final Genes genes;
     private IWorldMap map;
-    private final int minEnergyToReproduce;
     private int age = 0;
     private List<IPositionChangeObserver> observers = new ArrayList<>();
 
@@ -26,15 +26,13 @@ public class Animal implements IMapElement {
         this.genes = new Genes();
         this.direction = MapDirection.getRandomDirection();
         this.energy = startEnergy;
-        this.minEnergyToReproduce = this.map.getStartEnergy()/2;
     }
 
     private Animal (IWorldMap map, Animal parent1, Animal parent2){
         this.map = map;
-        this.position = this.map.babyPosition(parent1);
+        this.position = this.babyPosition(parent1);
         this.genes = new Genes (parent1.genes, parent2.genes);
         this.direction = MapDirection.getRandomDirection();
-        this.minEnergyToReproduce = parent1.minEnergyToReproduce;
 
         this.energy = (int) (0.25 * parent1.energy) + (int) (0.25 * parent2.energy);
         parent1.reduceEnergy((int) (0.25 * parent1.energy));
@@ -56,7 +54,7 @@ public class Animal implements IMapElement {
     }
 
     public void eatGrass(Grass grass){
-        List <Animal> strongestAnimals = this.map.getStrongestAnimals(this.map.chooseAnimals(this.map.objectsAt(grass.getPosition())));
+        List <Animal> strongestAnimals = this.map.getStrongestAnimals(this.map.selectAnimals(this.map.objectsAt(grass.getPosition())));
         if(strongestAnimals.size() == 0) return;
 
         int proteinToShare = grass.getProtein() / strongestAnimals.size();
@@ -65,8 +63,8 @@ public class Animal implements IMapElement {
         }
     }
 
-    public boolean canReproduce(){
-        return this.energy >= this.minEnergyToReproduce;
+    boolean canReproduce(){
+        return this.energy >= this.map.getMinEnergyToReproduce();
     }
 
     public void reproduce (Animal parent2){
@@ -74,6 +72,25 @@ public class Animal implements IMapElement {
             Animal children = new Animal(this.map, this, parent2);
             this.map.place(children);
         }
+    }
+
+    Vector2d babyPosition(Animal parent){
+        List<Vector2d> emptyPositions = new ArrayList<>();
+        MapDirection direction = NORTH;
+        Vector2d babyPosition = null;
+
+        for (int i=0; i<8; i++){
+            direction = parent.direction.rotation(i);
+            babyPosition = parent.getPosition().add(Objects.requireNonNull(direction.toUnitVector()));
+            babyPosition = this.map.correctPosition(babyPosition);
+            if (!this.map.isOccupied(babyPosition)){
+                emptyPositions.add(babyPosition);
+            }
+        }
+
+        if (emptyPositions.size() == 0) return parent.getPosition();
+        return emptyPositions.get(new Random().nextInt(emptyPositions.size()));
+
     }
 
     public boolean isDead (){
@@ -112,7 +129,7 @@ public class Animal implements IMapElement {
         return energy;
     }
 
-    public MapDirection getDirection(){
+    MapDirection getDirection(){
         return this.direction;
     }
 

@@ -1,9 +1,10 @@
-package agh.cs.map;
+package agh.cs.visualization;
 
+import agh.cs.map.IWorldMap;
 import agh.cs.mapElements.Animal;
 import agh.cs.mapElements.Grass;
 import agh.cs.mapElements.IMapElement;
-import agh.cs.position.Vector2d;
+import agh.cs.structures.Vector2d;
 
 import java.util.List;
 
@@ -75,7 +76,7 @@ public class MapVisualizer {
         if (this.map.isOccupied(currentPosition)) {
             List<IMapElement> objects = this.map.objectsAt(currentPosition);
             Object object = this.map.objectsAt(currentPosition).get(0);
-            List<Animal> animalsAtPosition = this.map.chooseAnimals(objects);
+            List<Animal> animalsAtPosition = this.map.selectAnimals(objects);
             if (animalsAtPosition.size()>1) result = "\uD83D\uDC3E";
             else if (object != null) {
                 result = object.toString();

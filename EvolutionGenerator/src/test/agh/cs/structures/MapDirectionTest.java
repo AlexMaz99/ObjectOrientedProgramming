@@ -1,7 +1,7 @@
-package agh.cs.position;
+package agh.cs.structures;
 import org.junit.jupiter.api.Test;
 
-import static agh.cs.position.MapDirection.*;
+import static agh.cs.structures.MapDirection.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 
