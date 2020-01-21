@@ -1,4 +1,6 @@
-package agh.cs;
+package agh.cs.visualization;
+
+import agh.cs.board.Board;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -8,7 +10,6 @@ public class Visualization {
     private JFrame frame;
     private Timer timer;
     private JTextArea textArea;
-    //private JTextArea statistics;
     private JButton startStopButton;
     private JButton stopSimulationButton;
     private Board board;
@@ -28,9 +29,6 @@ public class Visualization {
         textArea.setBounds(100,100, 1000,700);
         textArea.setEditable(false);
 
-        /*this.statistics=new JTextArea("");
-        statistics.setBounds(600,10, 200,80);
-        statistics.setEditable(false);*/
 
         this.startStopButton = new JButton("");
         startStopButton.setBounds(50,20,80,20);
@@ -66,9 +64,6 @@ public class Visualization {
                 startStopButton.setVisible(false);
                 timer.stop();
             }
-            /*statistics.setText(board.getStatistics());
-            frame.add(statistics);
-            SwingUtilities.updateComponentTreeUI(frame);*/
             textArea.setText(board.toString());
             frame.add(textArea);
             SwingUtilities.updateComponentTreeUI(frame);

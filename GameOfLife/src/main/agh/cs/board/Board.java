@@ -1,4 +1,4 @@
-package agh.cs;
+package agh.cs.board;
 
 import agh.cs.structures.Cell;
 import agh.cs.structures.Vector2d;
@@ -81,13 +81,6 @@ public class Board {
         for (Cell livingCell: this.aliveCells.values()) livingCell.updateNeighbours();
     }
 
-    public void addSurvivalRule(Integer rule){
-        if (!this.survivalRules.contains(rule))
-            this.survivalRules.add(rule);
-    }
-    public void removeSurvivalRule(Integer rule){
-        this.survivalRules.remove(rule);
-    }
     public void addLivingCell (Vector2d position){
         this.aliveCells.put(position, new Cell(position, this));
     }
@@ -105,7 +98,6 @@ public class Board {
     }
 
     public void start(){
-        //System.out.print(toString());
         try {
             Thread.sleep(50);
             day();
@@ -130,7 +122,6 @@ public class Board {
         for (int i=1; i<=this.upperRight.x; i++){
             for (int j=1; j<=this.upperRight.y; j++){
                 if (this.aliveCells.containsKey(new Vector2d(i,j))){
-                    //boardString.append(this.aliveCells.get(new Vector2d(i,j)).toString());
                     boardString.append("■");
                 }
                 else boardString.append("□");

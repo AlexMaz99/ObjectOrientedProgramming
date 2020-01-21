@@ -1,6 +1,6 @@
 package agh.cs.patterns;
 
-import agh.cs.Board;
+import agh.cs.board.Board;
 import agh.cs.structures.Vector2d;
 
 public class House extends Board {

@@ -1,6 +1,6 @@
 package agh.cs.structures;
 
-import agh.cs.Board;
+import agh.cs.board.Board;
 
 public class Cell {
     private Vector2d position;
